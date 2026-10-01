@@ -1,28 +1,55 @@
 # La Vuelta Analytics
 
-Dashboard web interativo para analizar datos históricos de La Vuelta a España (2011–2026). Construido con Django 5.2 y SQLite.
+La idea de este proyecto es **visualizar y analizar la historia de La Vuelta a España** (2011–2026) de una manera clara, práctica y visual. En lugar de quedarme con tablas, quería crear una web donde pudiera ver el recorrido de cada edición, su perfil, su dureza y comparar distintas vueltas entre sí para entender cómo ha evolucionado la carrera.
 
-> **Este repositorio es un portafolio/demostración**: se publica para mostrar el
-> código, la estructura y el resultado visual. Los datos en bruto (`data/`,
-> GPX y JSON), la base de datos SQLite y las variables de entorno son locales
-> y **no se publican** (ver `.gitignore`). Para ver la app real funcionando,
-> consulta la sección *Ejecución local*.
+Este repositorio es un **portafolio/demostración**: muestra la estructura, el código y el resultado visual. Los datos en bruto (`data/`, GPX y JSON), la base de datos SQLite y las variables de entorno son locales y **no se publican** (ver `.gitignore`).
 
----
+## ¿Qué es esta web?
+
+Es un dashboard hecho a medida para explorar las ediciones y etapas de La Vuelta. El objetivo ha sido combinar mapas, gráficas y métricas para que, con un par de clics, se pueda entender el carácter de cada etapa y de cada edición.
+
+| Ruta | Qué muestra |
+|---|---|
+| `/` | **Dashboard** — visión global del histórico: kilómetros totales, desnivel acumulado, número de etapas y ediciones. Incluye gráficas interactivas (Plotly), mapa general con todas las etapas y mini-tarjetas por edición con el perfil resumido (sparklines). |
+| `/edicion/<year>/` | **Detalle de edición** — KPIs de la temporada, tabla de etapas con su perfil resumido, gráficas de desnivel, distancia y tipología, top-5 de la clasificación general, maillots y el perfil completo de cada etapa. |
+| `/etapa/<year>/<numero>/` | **Detalle de etapa** — mapa del recorrido (Folium) con el track dibujado, perfil altimétrico interactivo (Plotly), métricas de terreno (altitud máx/mín, desnivel negativo, pendiente máx/media, número de puertos), resultado de la etapa (ganador y podio). Con navegación entre etapas anterior/siguiente. |
+| `/comparar/` | **Comparador cara a cara** — dos pestañas: *Ediciones* (compara dos años: KPIs, gráficas superpuestas, boxplot de desnivel, mapa comparativo y zonas por CCAA) y *Perfiles similares* (busca etapas con perfil altimétrico parecido y las compara lado a lado). |
+| `/mapa-general/` | **Mapa general** — vista global de todas las etapas del histórico en un mapa oscuro, con pestaña adicional para ver el recorrido por provincias. |
+| `/ayuda/` | Guía breve de uso de la web. |
+| `/admin/` | Panel de administración de Django (para revisar o corregir datos puntuales). |
+
+La navegación es sencilla: barra superior con accesos directos y un desplegable con todas las ediciones. Los mapas y gráficas se cargan con **HTMX** para evitar recargas completas de página.
+
+## Tecnologías utilizadas
+
+| Tecnología | Uso |
+|---|---|
+| [Django 5.2](https://www.djangoproject.com/) | Framework backend (vistas, modelos, gestión de datos y URLs). |
+| [SQLite](https://www.sqlite.org/) | Base de datos ligera para guardar ediciones, etapas, métricas y perfiles. |
+| [Plotly](https://plotly.com/python/) | Gráficas interactivas (perfiles altimétricos, comparativas, boxplots) generadas en servidor e incrustadas en HTML. |
+| [Folium](https://python-visualization.github.io/folium/) | Mapas interactivos (Leaflet). Usa tiles oscuros (CartoDB Dark Matter) para mantener el estilo visual. |
+| [GeoPandas](https://geopandas.org/) / [Shapely](https://shapely.readthedocs.io/) | Tratamiento de geometrías (tracks, buffers y solapes para detectar tramos comunes). |
+| [pandas](https://pandas.pydata.org/) / [numpy](https://numpy.org/) | Procesamiento y cálculo de perfiles, pendientes y métricas de terreno. |
+| [gpxpy](https://github.com/tkrajina/gpxpy) | Lectura y procesamiento de ficheros GPX oficiales. |
+| [geopy](https://geopy.readthedocs.io/) | Cálculos de distancias geodésicas entre puntos. |
+| [HTMX](https://htmx.org/) | Carga parcial de contenido (gráficas/mapas) sin recargar la página completa. |
+| [CSS personalizado](https://developer.mozilla.org/es/docs/Web/CSS) | Tema oscuro hecho a medida, responsive y enfocado a lectura de datos. |
+| [django-environ](https://django-environ.readthedocs.io/) | Gestión de variables de entorno (`.env`). |
+| [Ruff](https://docs.astral.sh/ruff/) | Linting y formateado del código. |
 
 ## Ejecución local
 
-> Aviso: para que la app funcione con datos reales hace falta la pipeline de
-> datos local (`data/` + BD poblada con `import_recorridos`), que no está en
-> el repo. Sin ella, el resto se puede arrancar pero con datos vacíos.
+> Para que la app funcione con datos reales hace falta la carpeta `data/` con los GPX/JSON y la base de datos poblada. Sin esos datos, la web se puede arrancar pero aparecerá vacía.
 
 ```bash
 # 1. Crear entorno virtual e instalar dependencias
 python -m venv venv
 venv\Scripts\activate          # Windows
+
 pip install -r requirements.txt
 
-# 2. Configurar variables de entorno (copia .env.example a .env)
+# 2. Copiar variables de entorno
+copy .env.example .env
 
 # 3. Ejecutar migraciones
 python manage.py migrate
@@ -34,206 +61,79 @@ python manage.py createsuperuser
 python manage.py runserver 127.0.0.1:8123 --noreload
 ```
 
-La app se abre en `http://127.0.0.1:8123/`.
-
----
-
-## Qué hay dentro
-
-### Para el usuario (lo que ve en el navegador)
-
-| Ruta | Qué es |
-|---|---|
-| `/` | **Dashboard** — métricas globales (km totales, desnivel, etapas, ediciones), gráficas interactivas (Plotly), mapa general de todas las etapas, mini-tarjetas por edición con sparklines de desnivel. |
-| `/edicion/<year>/` | **Detalle de edición** — KPIs de la edición, tabla de etapas con sparklines, gráficas de desnivel/distancia/tipos, top-5 del GC y maillots, perfil de cada etapa. |
-| `/etapa/<year>/<numero>/` | **Detalle de etapa** — mapa con track (Folium, tiles oscuros), perfil altimétrico (Plotly), métricas de terreno (altitud máx/mín, desnivel negativo, pendiente máx/media, nº puertos), resultado de la etapa (ganador, top-3). Navegación prev/next. |
-| `/comparar/` | **Comparador** — dos pestañas: "Ediciones" (compara dos años: KPIs, gráficas superpuestas, boxplot, mapa comparativo, comunidades autónomas) y "Perfiles similares" (busca etapas con perfil altimétrico parecido, las compara lado a lado). |
-| `/mapa-general/` | **Mapa general** — todas las etapas de todas las ediciones en un mapa oscuro, más mapa por provincias. |
-| `/admin/` | Panel de administración Django (requiere superusuario). |
-
-**Navegación:** barra superior con enlaces directos + menú desplegable "Ediciones" con todas las temporadas. Los mapas y gráficas se cargan vía HTMX (sin recarga completa de página).
-
-### Para el administrador (cómo se gestiona la BD)
-
-#### Fuente de datos
-
-Los datos de partida están en `data/` (JSON descargados externamente y GPX de etapas).
-La carpeta `data/` **no se publica en el repo** (ver `.gitignore`): es solo local y necesaria
-para que etapas y comparadores pinten mapas/perfiles. Sin ella, el resto de la web funciona.
-
-```
-data/
-├── recorridos/
-│   ├── routes.json            # Todas las etapas por año (origen, destino, ganador, km)
-│   ├── editions/              # GC final y maillots de cada edición
-│   │   ├── vuelta-a-espana-2011.json
-│   │   └── ...
-│   └── stages/                # Detalle por etapa (fecha, perfil, track, resultado)
-│       ├── vuelta-a-espana-2011-1.json
-│       └── ...
-└── 2022..2026/                # GPX por etapa (stage-N-parcours.gpx)
-```
-
-Los ficheros JSON y GPX se generan con una herramienta de descarga externa
-(`downloader.py`, fuera de este repo).
-
-> **Datos y marcas**: este proyecto es un ejercicio de análisis y visualización.
-> "La Vuelta" es una marca registrada de Unipublic/ASO y los datos de los
-> recorridos pertenecen a sus propietarios. No afiliado ni patrocinado por ellos.
-
-#### Comandos de gestión
-
-```bash
-# Importar/actualizar datos desde data/recorridos/
-python manage.py import_recorridos                    # todo 2011-2026
-python manage.py import_recorridos --years 2025,2026  # solo esos años
-python manage.py import_recorridos --create-only      # solo crear faltantes
-
-# Precalcular métricas GPX (altitud, pendientes, puertos) para etapas con archivo .gpx
-python manage.py precompute_metrics
-
-# Precalcular perfil normalizado (para comparación de perfiles similares)
-python manage.py precompute_perfiles
-
-# Rellenar perfil_real de etapas con GPX (para sparklines y gráficas)
-python manage.py backfill_perfil_real
-
-# Rellenar métricas de terreno de etapas sin GPX (desde perfil_real)
-python manage.py backfill_perfil_metrics
-
-# Recalcular pendiente_max con métrica robusta P99 en todas las etapas
-python manage.py recalcular_pendientes
-
-# Backfill manual de resultados 2026 (ya ejecutado, no repetir)
-python manage.py backfill_resultados_2026
-```
-
-**Orden típico tras importar datos nuevos:**
-
-```bash
-python manage.py import_recorridos
-python manage.py precompute_perfiles
-python manage.py precompute_metrics
-python manage.py backfill_perfil_real
-python manage.py backfill_perfil_metrics
-python manage.py recalcular_pendientes
-```
-
-#### Admin Django (`/admin/`)
-
-- **Edición** — año, nombre, fechas, ganador, GC (JSON), maillots (JSON).
-- **Etapa** — edición, número, nombre, tipo, distancia, desnivel, track (WKT), ruta al GPX, perfil, métricas precalculadas, fecha, localidades, ganador, GC líder, resultados.
-
----
+La app estará disponible en [http://127.0.0.1:8123/](http://127.0.0.1:8123/).
 
 ## Arquitectura
 
-```
+El proyecto sigue una arquitectura limpia y separada por responsabilidades (MVC + services):
+
+```text
 proyecto-lavuelta/
-├── core/                       # Configuración Django
-│   ├── settings.py             # Settings (SQLite, cache en disco, django-environ)
-│   ├── urls.py                 # Enrutamiento raíz → analytics
-│   └── context_processors.py   # Inyecta all_ediciones en todos los templates
+├── core/                        # Configuración global de Django
+│   ├── settings.py              # Configuración (SQLite, caché en disco, django-environ)
+│   ├── urls.py                  # Enrutado raíz → app analytics
+│   ├── context_processors.py    # Inyecta todas las ediciones en los templates
+│   ├── asgi.py                  # Configuración ASGI
+│   └── wsgi.py                  # Configuración WSGI
 │
-├── analytics/                  # App principal
-│   ├── models.py               # Edicion, Etapa
-│   ├── views.py                # 7 vistas públicas (665 líneas)
-│   ├── urls.py                 # Rutas → vistas
-│   ├── admin.py                # Registro en Django admin
+├── analytics/                   # App principal
+│   ├── models.py                # Modelos: Edicion, Etapa
+│   ├── views.py                 # Vistas públicas (dashboard, edición, etapa, comparador, mapa...)
+│   ├── urls.py                  # Rutas de la app
+│   ├── admin.py                 # Registro en Django Admin
+│   ├── tests.py                 # Tests básicos
 │   │
-│   ├── services/               # Lógica de negocio separada
-│   │   ├── gpx_processor.py    # Procesamiento GPX (perfil, métricas, P99)
-│   │   ├── charts.py           # Gráficas Plotly (colores, layout, chart_geo)
-│   │   ├── geografia.py        # Mapas Folium (tiles oscuros, comunidades, provincias)
-│   │   ├── perfiles_similares.py  # Comparación de perfiles (similitud, métricas)
-│   │   └── sparkline.py        # SVG mini-sparklines de desnivel
-│   │
-│   ├── management/commands/    # Comandos de gestión
-│   │   ├── import_recorridos.py
-│   │   ├── precompute_metrics.py
-│   │   ├── precompute_perfiles.py
-│   │   ├── backfill_perfil_real.py
-│   │   ├── backfill_perfil_metrics.py
+│   ├── management/commands/     # Comandos personalizados de Django
+│   │   ├── import_recorridos.py      # Importa datos desde data/recorridos/ (JSON)
+│   │   ├── import_data.py            # Importa etapas desde GPX (data/<año>/)
+│   │   ├── precompute_metrics.py     # Precalcula métricas de terreno
+│   │   ├── precompute_perfiles.py    # Precalcula perfiles normalizados (comparador)
+│   │   ├── backfill_perfil_real.py   # Rellena perfil_real desde GPX
+│   │   ├── backfill_perfil_metrics.py# Rellena métricas desde perfil_real
 │   │   ├── backfill_resultados_2026.py
-│   │   ├── recalcular_pendientes.py
-│   │   └── import_data.py      # Legado (sin uso)
+│   │   └── recalcular_pendientes.py # Recalcula pendiente máxima (P99)
 │   │
-│   ├── templates/analytics/    # Templates Django
-│   │   ├── base.html           # Layout base (navbar, HTMX, Plotly)
-│   │   ├── dashboard.html      # Dashboard principal
-│   │   ├── edicion_detalle.html
-│   │   ├── etapa_detalle.html / etapa_detalle_content.html (HTMX)
-│   │   ├── comparador.html
-│   │   ├── mapa_general.html
-│   │   └── partials/           # Fragmentos HTMX (charts, map_preview)
+│   ├── migrations/               # Migraciones de la base de datos
 │   │
-│   └── static/analytics/       # CSS, JS, imágenes
-│       ├── css/                # base.css, components.css, dashboard.css, ...
-│       └── vendor/             # plotly.min.js
+│   ├── services/                # Lógica de negocio separada de las vistas
+│   │   ├── charts.py             # Generación de gráficas Plotly (servidor)
+│   │   ├── geografia.py          # Generación de mapas Folium (tramos, provincias, comparador)
+│   │   ├── gpx_processor.py      # Procesamiento de GPX (perfil, métricas, detección de puertos)
+│   │   ├── perfiles_similares.py # Lógica de similitud entre perfiles altimétricos
+│   │   ├── sparkline.py          # Generación de SVG sparklines (perfiles miniatura)
+│   │   └── __init__.py
+│   │
+│   ├── templates/analytics/      # Plantillas HTML
+│   │   ├── base.html                    # Layout base (navbar, meta, CSS/JS)
+│   │   ├── dashboard.html               # Dashboard principal
+│   │   ├── edicion_detalle.html         # Detalle de edición
+│   │   ├── etapa_detalle.html           # Detalle de etapa (layout)
+│   │   ├── etapa_detalle_content.html   # Fragmento HTMX
+│   │   ├── comparador.html              # Comparador cara a cara
+│   │   ├── mapa_general.html            # Mapa general (etapas/provincias)
+│   │   ├── ayuda.html                   # Página de ayuda
+│   │   ├── _icons.html                  # Sprite SVG de iconos
+│   │   ├── _perfiles_resultado.html     # Partial para perfiles similares
+│   │   ├── _tipo_icono.html             # Icono por tipo de etapa
+│   │   └── partials/
+│   │       ├── charts.html              # Fragmento HTMX para gráficas
+│   │       └── map_preview.html          # Fragmento HTMX para mapa preview
+│   │
+│   └── static/analytics/          # Archivos estáticos
+│       ├── css/                   # Estilos CSS (tema oscuro, responsive)
+│       ├── favicon.svg            # Favicon
+│       └── vendor/plotly.min.js   # Plotly para gráficas interactivas
 │
-├── data/recorridos/            # JSON fuente (vendored, no en repo)
-├── db.sqlite3                  # Base de datos
-├── cache/                      # Caché en disco (mapas, gráficas)
-├── .env                        # Variables de entorno
-├── pyproject.toml              # Configuración ruff (linting)
-└── requirements.txt            # Dependencias Python
+├── data/                        # Datos locales (GPX + JSON) — NO se publica
+├── cache/                       # Caché en disco (mapas, gráficas) — NO se publica
+├── db.sqlite3                   # Base de datos — NO se publica
+├── .env                         # Variables de entorno — NO se publica
+├── .env.example                 # Plantilla de variables de entorno
+├── .gitignore                   # Exclusiones para Git
+├── manage.py                    # CLI de Django
+├── requirements.txt             # Dependencias Python
+├── pyproject.toml               # Configuración de Ruff
+├── GUIA_ADMIN_INTERNA.md         # Guía de administración (solo local)
+└── README.md                    # Este documento
 ```
 
-### Modelos
-
-**Edicion** — una temporada de La Vuelta:
-- `year`, `nombre`, `gender`, `fecha_inicio`, `fecha_fin`
-- `ganador` — nombre del ganador final
-- `gc_json` — clasificación general completa (JSON lista)
-- `maillots_json` — maillots finales (JSON objeto: points, kom, youth)
-
-**Etapa** — una etapa concreta:
-- `edicion` (FK → Edicion), `numero`, `nombre`, `tipo`, `distancia`, `desnivel`
-- `track_wkt` — geometría de la ruta en WKT (LINESTRING)
-- `file_path` — ruta al archivo .gpx original (2022–2026) o `None` (2011–2021)
-- `perfil` — perfil normalizado 441 muestras en [0,1] (para comparación)
-- `perfil_real` — perfil real en km (JSON [[km, alt], ...]) (para gráficas)
-- Métricas precalculadas: `altitud_max`, `altitud_min`, `desnivel_negativo`, `pendiente_max`, `pendiente_media`, `n_puertos`
-- Datos factuales: `fecha`, `localidad_inicio`, `localidad_fin`, `distancia_oficial`, `ganador`, `gc_leader`, `resultados`
-
-### Cómo se generan las gráficas y mapas
-
-- **Gráficas:** Plotly generadas en servidor (`go.Figure` → `fig.to_html()`), incrustadas como HTML. El JS de Plotly se carga una sola vez en `base.html`.
-- **Mapas:** Folium con tiles oscuros (CartoDB dark_matter), generados en servidor (`mapa._repr_html_()`). Los mapas grandes (mapa general) se cachean en disco.
-- **Sparklines:** SVG de desnivel generados en servidor (`sparkline.py`).
-- **HTMX:** Algunas secciones (gráficas del dashboard, preview del mapa) se cargan sin recarga de página.
-
-### Caché
-
-Caché en disco (`cache/`) con `timeout=None` (eterna). Se limpia manualmente con `python manage.py shell` → `from django.core.cache import cache; cache.clear()`.
-
-Cachéados: mapa general, mapa de provincias, gráficas del dashboard, gráficas por edición, mapa comparativo, datos GPX procesados.
-
----
-
-## Stack técnico
-
-- **Backend:** Django 5.2, Python 3.10+
-- **Base de datos:** SQLite (file-based, `db.sqlite3`)
-- **Gráficas:** Plotly (generadas en servidor)
-- **Mapas:** Folium (Leaflet) con tiles CartoDB dark_matter
-- **Procesamiento geoespacial:** GeoPandas, Shapely, Geopy
-- **GPX:** gpxpy
-- **Datos:** pandas, numpy
-- **Frontend:** HTMX 1.9, CSS custom (dark theme)
-- **Configuración:** django-environ (`.env`)
-- **Linting:** ruff (ver `pyproject.toml`)
-
----
-
-## Desarrollo
-
-```bash
-# Linting
-ruff check .
-ruff format --check .
-
-# El servidor se arranca con --noreload para que los mapas cacheados
-# no se regeneren en cada cambio de archivo:
-python manage.py runserver 127.0.0.1:8123 --noreload
-```
