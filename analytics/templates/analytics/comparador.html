@@ -1,0 +1,483 @@
+{% extends 'analytics/base.html' %}
+{% load static %}
+{% block title %}Comparador{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'analytics/css/comparador.css' %}">
+{% endblock %}
+
+{% block content %}
+<header class="comp-header">
+    <h1 class="comp-title">Comparador Cara a Cara</h1>
+</header>
+
+<!-- ---------- Tabs ---------- -->
+<div class="comp-tabs" role="tablist">
+    <a class="comp-tab {% if tab == 'ediciones' %}is-active{% endif %}" href="{% url 'comparar' %}?tab=ediciones" role="tab">Ediciones</a>
+    <a class="comp-tab {% if tab == 'perfiles' %}is-active{% endif %}" href="{% url 'comparar' %}?tab=perfiles" role="tab">Perfiles similares</a>
+    <a class="comp-tab {% if tab == 'zonas' %}is-active{% endif %}" href="{% url 'comparar' %}?tab=zonas" role="tab">Zonas comunes</a>
+</div>
+
+<!-- ================= TAB EDICIONES ================= -->
+<section class="comp-panel {% if tab == 'ediciones' %}is-active{% endif %}" data-panel="ediciones">
+
+    <!-- ---------- Selector de ediciones ---------- -->
+    <form method="get" action="{% url 'comparar' %}" class="comp-selector">
+        <input type="hidden" name="tab" value="ediciones">
+        <div class="comp-pick">
+            <label class="comp-pick-label" for="id_a">Edición A</label>
+            <select name="a" id="id_a" class="comp-select">
+                <option value="">- Edición -</option>
+                {% for ed in todas %}
+                <option value="{{ ed.year }}" {% if ed.year == a %}selected{% endif %}>{{ ed.year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <span class="comp-vs">VS</span>
+        <div class="comp-pick">
+            <label class="comp-pick-label" for="id_b">Edición B</label>
+            <select name="b" id="id_b" class="comp-select">
+                <option value="">- Edición -</option>
+                {% for ed in todas %}
+                <option value="{{ ed.year }}" {% if ed.year == b %}selected{% endif %}>{{ ed.year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="comp-go">Comparar</button>
+    </form>
+
+    <!-- KPIs enfrentados -->
+    {% if ed_a %}
+    <div class="comp-duel">
+        <div class="comp-side" style="--side: {{ color_a }}">
+            <div class="comp-side-head">
+                <span class="comp-side-year">{{ a }}</span>
+            </div>
+            <div class="comp-kpis">
+                <div class="comp-kpi"><span class="comp-kpi-label">Etapas</span><span class="comp-kpi-value">{{ ed_a.n }}</span></div>
+                <div class="comp-kpi"><span class="comp-kpi-label">Distancia</span><span class="comp-kpi-value">{{ ed_a.total_km|floatformat:0 }}<small> km</small></span></div>
+                <div class="comp-kpi"><span class="comp-kpi-label">Desnivel</span><span class="comp-kpi-value">{{ ed_a.total_des|floatformat:0 }}<small> m+</small></span></div>
+                <div class="comp-kpi"><span class="comp-kpi-label">Dureza</span><span class="comp-kpi-value">{{ ed_a.dureza|floatformat:1 }}<small> m/km</small></span></div>
+                <div class="comp-kpi"><span class="comp-kpi-label">Media dist.</span><span class="comp-kpi-value">{{ ed_a.avg_km|floatformat:1 }}<small> km</small></span></div>
+                <div class="comp-kpi"><span class="comp-kpi-label">Media desn.</span><span class="comp-kpi-value">{{ ed_a.avg_des|floatformat:0 }}<small> m</small></span></div>
+            </div>
+        </div>
+
+        <div class="comp-side" style="--side: {{ color_b }}">
+            <div class="comp-side-head">
+                <span class="comp-side-year">{{ b }}</span>
+            </div>
+            <div class="comp-kpis">
+                <div class="comp-kpi"><span class="comp-kpi-label">Etapas</span><span class="comp-kpi-value">{{ ed_b.n }}</span></div>
+                <div class="comp-kpi"><span class="comp-kpi-label">Distancia</span><span class="comp-kpi-value">{{ ed_b.total_km|floatformat:0 }}<small> km</small></span></div>
+                <div class="comp-kpi"><span class="comp-kpi-label">Desnivel</span><span class="comp-kpi-value">{{ ed_b.total_des|floatformat:0 }}<small> m+</small></span></div>
+                <div class="comp-kpi"><span class="comp-kpi-label">Dureza</span><span class="comp-kpi-value">{{ ed_b.dureza|floatformat:1 }}<small> m/km</small></span></div>
+                <div class="comp-kpi"><span class="comp-kpi-label">Media dist.</span><span class="comp-kpi-value">{{ ed_b.avg_km|floatformat:1 }}<small> km</small></span></div>
+                <div class="comp-kpi"><span class="comp-kpi-label">Media desn.</span><span class="comp-kpi-value">{{ ed_b.avg_des|floatformat:0 }}<small> m</small></span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Etapas más duras/largas -->
+    <div class="comp-extremes">
+        <div class="comp-extreme">
+            <span class="comp-extreme-tag" style="--side:{{ color_a }}">Más dura {{ a }}</span>
+            <span class="comp-extreme-name">{{ ed_a.dura.nombre }}</span>
+            <span class="comp-extreme-val">{{ ed_a.dura.desnivel|floatformat:0 }} m+</span>
+            <p></p>
+            <a class="comp-extreme-btn" href="{% url 'etapa_detalle' a ed_a.dura.numero %}">Ver detalle</a>
+        </div>
+        <div class="comp-extreme">
+            <span class="comp-extreme-tag" style="--side:{{ color_a }}">Más larga {{ a }}</span>
+            <span class="comp-extreme-name">{{ ed_a.larga.nombre }}</span>
+            <span class="comp-extreme-val">{{ ed_a.larga.distancia|floatformat:0 }} km</span>
+            <p></p>
+            <a class="comp-extreme-btn" href="{% url 'etapa_detalle' a ed_a.larga.numero %}">Ver detalle</a>
+        </div>
+        <div class="comp-extreme">
+            <span class="comp-extreme-tag" style="--side:{{ color_b }}">Más dura {{ b }}</span>
+            <span class="comp-extreme-name">{{ ed_b.dura.nombre }}</span>
+            <span class="comp-extreme-val">{{ ed_b.dura.desnivel|floatformat:0 }} m+</span>
+            <p></p>
+            <a class="comp-extreme-btn" href="{% url 'etapa_detalle' b ed_b.dura.numero %}">Ver detalle</a>
+        </div>
+        <div class="comp-extreme">
+            <span class="comp-extreme-tag" style="--side:{{ color_b }}">Más larga {{ b }}</span>
+            <span class="comp-extreme-name">{{ ed_b.larga.nombre }}</span>
+            <span class="comp-extreme-val">{{ ed_b.larga.distancia|floatformat:0 }} km</span>
+            <p></p>
+            <a class="comp-extreme-btn" href="{% url 'etapa_detalle' b ed_b.larga.numero %}">Ver detalle</a>
+        </div>
+    </div>
+
+    <!-- Gráficas comparativas -->
+    <h3 class="comp-section-title"><span class="comp-section-index">A</span> Desnivel por etapa</h3>
+    <div class="comp-chart card">{{ des_chart_html|safe }}</div>
+
+    <h3 class="comp-section-title"><span class="comp-section-index">B</span> Distancia por etapa</h3>
+    <div class="comp-chart card">{{ km_chart_html|safe }}</div>
+
+    <h3 class="comp-section-title"><span class="comp-section-index">C</span> Distribución del desnivel</h3>
+    <div class="comp-chart card">{{ box_chart_html|safe }}</div>
+
+    <!-- Tipología enfrentada -->
+    <h3 class="comp-section-title"><span class="comp-section-index">D</span> Tipología de etapas</h3>
+    <div class="comp-types card">
+        <table class="comp-types-table">
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th style="color:{{ color_a }}">{{ a }}</th>
+                    <th style="color:{{ color_b }}">{{ b }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in tipos_a %}
+                <tr>
+                    <td>{{ t.tipo }}</td>
+                    <td>{{ t.n }}</td>
+                    <td>
+                        {% for tt in tipos_b %}{% if tt.tipo == t.tipo %}{{ tt.n }}{% endif %}{% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Geografía: mapa + comunidades -->
+    <h3 class="comp-section-title"><span class="comp-section-index">E</span> Geografía · Recorrido de ambas ediciones</h3>
+    {% if mapa_comparativo_html %}
+    <div class="comp-chart card comp-map">{{ mapa_comparativo_html|safe }}</div>
+    <div class="comp-map-legend">
+        <span class="comp-legend-item"><span class="comp-legend-dot" style="background:{{ color_a }}"></span>{{ a }}</span>
+        <span class="comp-legend-item"><span class="comp-legend-dot" style="background:{{ color_b }}"></span>{{ b }}</span>
+    </div>
+    {% endif %}
+    <p class="comp-geo-hint">Comunidades autónomas atravesadas</p>
+    <div class="comp-geo">
+        <div class="comp-geo-col">
+            <span class="comp-geo-head" style="color:{{ color_a }}">Solo {{ a }}</span>
+            {% if comunidades_a %}
+            <ul class="comp-geo-list">
+                {% for c in comunidades_a %}<li>{{ c }}</li>{% endfor %}
+            </ul>
+            {% else %}
+            <p class="comp-geo-empty">Sin comunidades exclusivas</p>
+            {% endif %}
+        </div>
+        <div class="comp-geo-common">
+            <span class="comp-geo-head">Común</span>
+            {% if comunidades_comunes %}
+            <ul class="comp-geo-list">
+                {% for c in comunidades_comunes %}<li>{{ c }}</li>{% endfor %}
+            </ul>
+            {% else %}
+            <p class="comp-geo-empty">Sin comunidades compartidas</p>
+            {% endif %}
+        </div>
+        <div class="comp-geo-col">
+            <span class="comp-geo-head" style="color:{{ color_b }}">Solo {{ b }}</span>
+            {% if comunidades_b %}
+            <ul class="comp-geo-list">
+                {% for c in comunidades_b %}<li>{{ c }}</li>{% endfor %}
+            </ul>
+            {% else %}
+            <p class="comp-geo-empty">Sin comunidades exclusivas</p>
+            {% endif %}
+        </div>
+    </div>
+    </div>
+    {% endif %}
+</section>
+
+<!-- ================= TAB PERFILES SIMILARES ================= -->
+<section class="comp-panel {% if tab == 'perfiles' %}is-active{% endif %}" data-panel="similares">
+
+    <p class="perfil-tip">Puedes elegir una etapa y buscar las más parecidas, o elegir dos etapas y compararlas entre sí.</p>
+
+    <form method="get" action="{% url 'comparar' %}" class="comp-selector perfil-toolbar" id="perfil-form">
+        <input type="hidden" name="tab" value="perfiles">
+        <div class="perfil-picks" id="perfil-picks">
+        <div class="perfil-top">
+        <div class="comp-pick" id="pf-a-wrap">
+            <label class="comp-pick-label" for="pf_a_year">Etapa 1</label>
+            <div class="ac-wrap cascade">
+                <select class="comp-select cal" id="pf_a_year" aria-label="Año de la etapa 1">
+                    <option value="">- Edición -</option>
+                    {% for ed in todas %}
+                    <option value="{{ ed.year }}"{% if perfil_e1 and perfil_e1.edicion.year == ed.year %} selected{% endif %}>{{ ed.year }}</option>
+                    {% endfor %}
+                </select>
+                <select name="p1" id="pf_a" class="comp-select stage"{% if not perfil_e1 %} required{% endif %}>
+                    {% if perfil_e1 %}
+                    <option value="{{ perfil_e1.id }}" selected>{{ perfil_e1.edicion.year }} · Etapa {{ perfil_e1.numero }}{% if perfil_e1.tipo %} · {{ perfil_e1.tipo }}{% endif %}</option>
+                    {% else %}
+                    <option value="">- Elegir etapa -</option>
+                    {% endif %}
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" class="comp-go" name="accion"
+                value="{% if perfil_e2 %}comparar{% else %}similares{% endif %}"
+                id="pf-submit">{% if perfil_e2 %}Comparar{% else %}Buscar similares{% endif %}</button>
+        </div>
+
+        <button type="button" class="comp-add" id="pf-add"
+                aria-expanded="{% if perfil_e2 %}true{% else %}false{% endif %}"
+                data-off="Añadir etapa 2"
+                data-on="Quitar etapa 2"
+                title="Añadir una segunda etapa para comparar">
+            <span class="comp-add-ico" aria-hidden="true">{% if perfil_e2 %}<svg class="ico"><use href="#ix-close"/></svg>{% else %}<svg class="ico"><use href="#ix-plus"/></svg>{% endif %}</span>
+            <span class="comp-add-label">{% if perfil_e2 %}Quitar etapa 2{% else %}Añadir etapa 2{% endif %}</span>
+        </button>
+
+        <div class="perfil-b-row {% if not perfil_e2 %}is-hidden{% endif %}" id="pf-b-row">
+            <div class="comp-pick" id="pf-b-wrap">
+                <label class="comp-pick-label" for="pf_b_year">Etapa 2</label>
+                <div class="ac-wrap cascade">
+                    <select class="comp-select cal" id="pf_b_year" aria-label="Año de la etapa 2">
+                        <option value="">- Edición -</option>
+                        {% for ed in todas %}
+                        <option value="{{ ed.year }}"{% if perfil_e2 and perfil_e2.edicion.year == ed.year %} selected{% endif %}>{{ ed.year }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="p2" id="pf_b" class="comp-select stage">
+                        {% if perfil_e2 %}
+                        <option value="{{ perfil_e2.id }}" selected>{{ perfil_e2.edicion.year }} · Etapa {{ perfil_e2.numero }}{% if perfil_e2.tipo %} · {{ perfil_e2.tipo }}{% endif %}</option>
+                        {% else %}
+                        <option value="">- Elegir etapa -</option>
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        </div>
+    </form>
+
+    {% include 'analytics/_perfiles_resultado.html' %}
+</section>
+
+<!-- ================= TAB ZONAS COMUNES ================= -->
+<section class="comp-panel {% if tab == 'zonas' %}is-active{% endif %}" data-panel="zonas">
+
+    <p class="perfil-tip">Elige una etapa y te enseñamos las etapas que comparten carreteras con ella, en cualquier edición.</p>
+
+    <form method="get" action="{% url 'comparar' %}" class="comp-selector perfil-toolbar" id="zona-form">
+        <input type="hidden" name="tab" value="zonas">
+        <div class="perfil-top">
+        <div class="comp-pick" id="zona-a-wrap">
+            <label class="comp-pick-label" for="zona_year">Etapa de referencia</label>
+            <div class="ac-wrap cascade">
+                <select class="comp-select cal" id="zona_year" aria-label="Año de la etapa">
+                    <option value="">— Edición —</option>
+                    {% for ed in todas %}
+                    <option value="{{ ed.year }}"{% if zona_e and zona_e.edicion.year == ed.year %} selected{% endif %}>{{ ed.year }}</option>
+                    {% endfor %}
+                </select>
+                <select name="z1" id="zona_st" class="comp-select stage"{% if not zona_e %} required{% endif %}>
+                    {% if zona_e %}
+                    <option value="{{ zona_e.id }}" selected>{{ zona_e.edicion.year }} · Etapa {{ zona_e.numero }}{% if zona_e.tipo %} · {{ zona_e.tipo }}{% endif %}</option>
+                    {% else %}
+                    <option value="">— Elegir etapa —</option>
+                    {% endif %}
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="comp-go" name="accion" value="zonas">Buscar tramos</button>
+        </div>
+    </form>
+
+    {% if zona_hint %}
+    <p class="perfil-hint">{{ zona_hint }}</p>
+    {% endif %}
+
+    {% if zona_e %}
+    <h3 class="perfil-one-title">Etapas que comparten recorrido con <span class="perfil-accent">{{ zona_e.edicion.year }} · Etapa {{ zona_e.numero }}</span></h3>
+    {% if zona_tramos %}
+    <div class="perfil-rows zona-rows">
+        {% for r in zona_tramos %}
+        <div class="zona-item" data-z1="{{ zona_e.id }}" data-z2="{{ r.etapa.id }}">
+            <button type="button" class="perfil-row zona-row">
+                <span class="perfil-row-sim">{{ r.km|floatformat:1 }} km · {{ r.pct|floatformat:0 }}%</span>
+                <span class="perfil-row-label">{{ r.etapa.edicion.year }} · Etapa {{ r.etapa.numero }}{% if r.etapa.localidad_inicio or r.etapa.localidad_fin %}<span class="sim-route">{{ r.etapa.localidad_inicio }} → {{ r.etapa.localidad_fin }}</span>{% endif %}</span>
+                <span class="perfil-row-meta">{% include 'analytics/_tipo_icono.html' with tipo=r.etapa.tipo %}{{ r.etapa.tipo }} · {{ r.etapa.distancia|floatformat:0 }} km · {{ r.etapa.desnivel|floatformat:0 }} m+ <span class="zona-chevron" aria-hidden="true"><svg class="ico"><use href="#ix-chevron"/></svg></span></span>
+            </button>
+            <div class="zona-map-box">
+                <div class="zona-map-legend">
+                    <span class="comp-legend-item"><span class="comp-legend-dot" style="background:#E3152B"></span>{{ zona_e.edicion.year }} · Etapa {{ zona_e.numero }}</span>
+                    <span class="comp-legend-item"><span class="comp-legend-dot" style="background:#6FA8DC"></span>{{ r.etapa.edicion.year }} · Etapa {{ r.etapa.numero }}</span>
+                    <span class="comp-legend-item"><span class="comp-legend-dot" style="background:#F5A623"></span>Tramo en común</span>
+                </div>
+                <div class="zona-map-load" data-url="{% url 'mapa_par' %}?z1={{ zona_e.id }}&z2={{ r.etapa.id }}"></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="perfil-hint">Ninguna otra etapa comparte carreteras con esta (recorrido único).</p>
+    {% endif %}
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+    // --- Selector en cascada de etapas: año → etapas de ese año ---
+    var ETAPAS = {{ todas_etapas_json|safe }};
+    function poblarEtapas(edSel, stageSel, seleccion) {
+        if (!edSel || !stageSel) return;
+        var year = edSel.value;
+        var actual = (seleccion === undefined) ? stageSel.value : seleccion;
+        stageSel.innerHTML = '';
+        var ph = document.createElement('option');
+        ph.value = '';
+        ph.textContent = '— Elegir etapa —';
+        stageSel.appendChild(ph);
+        for (var i = 0; i < ETAPAS.length; i++) {
+            if (String(ETAPAS[i].year) !== year) continue;
+            var it = document.createElement('option');
+            it.value = ETAPAS[i].id;
+            it.textContent = 'Etapa ' + ETAPAS[i].number + ' · ' + ETAPAS[i].tipo +
+                (ETAPAS[i].localidad ? ' · ' + ETAPAS[i].localidad : '');
+            if (String(ETAPAS[i].id) === String(actual)) it.selected = true;
+            stageSel.appendChild(it);
+        }
+    }
+    function initCascade(edSelId, stageSelId) {
+        var edSel = document.getElementById(edSelId);
+        var stageSel = document.getElementById(stageSelId);
+        if (!edSel || !stageSel) return;
+        edSel.addEventListener('change', function () { poblarEtapas(edSel, stageSel); });
+        poblarEtapas(edSel, stageSel);
+    }
+    initCascade('pf_a_year', 'pf_a');
+    initCascade('pf_b_year', 'pf_b');
+    initCascade('zona_year', 'zona_st');
+
+    // Botón "Añadir etapa 2": muestra/oculta la segunda etapa.
+    // Al abrir, el botón pasa a estar junto al selector 2 (a su derecha) de
+    // forma discreta (solo el icono ×); al cerrar vuelve debajo del selector 1.
+    var add = document.getElementById('pf-add');
+    var submit = document.getElementById('pf-submit');
+    var bRow = document.getElementById('pf-b-row');
+    var bWrap = document.getElementById('pf-b-wrap');
+    var addIco = add ? add.querySelector('.comp-add-ico') : null;
+    var addLabel = add ? add.querySelector('.comp-add-label') : null;
+
+    function fijarUbicacion(abierto) {
+        if (!add || !bRow) return;
+        if (abierto) { bRow.appendChild(add); }
+        else {
+            var picks = document.getElementById('perfil-picks');
+            if (picks) picks.insertBefore(add, bRow);
+        }
+    }
+
+    function aplicar(abierto) {
+        submit.value = abierto ? 'comparar' : 'similares';
+        submit.textContent = abierto ? 'Comparar' : 'Buscar similares';
+        add.setAttribute('aria-expanded', abierto ? 'true' : 'false');
+        if (addIco) addIco.innerHTML = abierto ? '<svg class="ico"><use href="#ix-close"></use></svg>' : '<svg class="ico"><use href="#ix-plus"></use></svg>';
+        if (addLabel) addLabel.textContent = abierto ? 'Quitar etapa 2' : 'Añadir etapa 2';
+        document.getElementById('perfil-form').classList.toggle('is-open', abierto);
+    }
+
+    if (add && submit && bRow) {
+        var abierto = add.getAttribute('aria-expanded') === 'true';
+        fijarUbicacion(abierto);
+        aplicar(abierto);
+        add.addEventListener('click', function () {
+            abierto = !abierto;
+            bRow.classList.toggle('is-hidden', !abierto);
+            fijarUbicacion(abierto);
+            aplicar(abierto);
+            if (abierto) {
+                var bSel = document.getElementById('pf_b');
+                if (bSel) bSel.focus();
+            }
+        });
+    }
+
+    // --- "Buscar similares": acordeón con la comparación A vs B bajo demanda ---
+    function cargarComparacion(det) {
+        var body = det.querySelector('.sim-body');
+        if (!body || body.getAttribute('data-cargado')) return;
+        var p1 = det.getAttribute('data-p1') || '';
+        var p2 = det.getAttribute('data-p2') || '';
+        body.setAttribute('data-cargado', '1');
+        body.innerHTML = '<p class="perfil-hint" style="margin:0">Cargando comparación…</p>';
+        fetch('/comparar/?tab=perfiles&p1=' + encodeURIComponent(p1) + '&p2=' + encodeURIComponent(p2),
+            { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function (r) {
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return r.text();
+            })
+            .then(function (html) {
+                body.innerHTML = html;
+                // Re-ejecuta los <script> inyectados (Plotly.newPlot de cada perfil)
+                var inserts = body.querySelectorAll('script');
+                for (var s = 0; s < inserts.length; s++) {
+                    var clon = document.createElement('script');
+                    clon.type = 'text/javascript';
+                    if (inserts[s].src) { clon.src = inserts[s].src; }
+                    else { clon.textContent = inserts[s].textContent; }
+                    inserts[s].parentNode.removeChild(inserts[s]);
+                    document.body.appendChild(clon);
+                    document.body.removeChild(clon);
+                }
+            })
+            .catch(function () {
+                body.removeAttribute('data-cargado');
+                body.innerHTML = '<p class="perfil-hint" style="margin:0">No se pudo cargar la comparación.</p>';
+            });
+    }
+    var simItems = document.querySelectorAll('details.sim-item');
+    for (var sIdx = 0; sIdx < simItems.length; sIdx++) {
+        simItems[sIdx].addEventListener('toggle', function () {
+            if (this.open) cargarComparacion(this);
+        });
+    }
+
+    // --- Zonas comunes: acordeón con mapa cargado bajo demanda ---
+    var zonaItems = Array.prototype.slice.call(document.querySelectorAll('.zona-item'));
+    function cerrarZona(item) {
+        item.classList.remove('is-open');
+        var row = item.querySelector('.zona-row');
+        if (row) row.setAttribute('aria-expanded', 'false');
+    }
+    zonaItems.forEach(function (item) {
+        var row = item.querySelector('.zona-row');
+        var box = item.querySelector('.zona-map-box');
+        var load = item.querySelector('.zona-map-load');
+        var cargado = false;
+        row.addEventListener('click', function () {
+            var yaAbierto = item.classList.contains('is-open');
+            // Cierra el resto (solo una fila abierta a la vez)
+            zonaItems.forEach(cerrarZona);
+            if (yaAbierto) return;
+            item.classList.add('is-open');
+            row.setAttribute('aria-expanded', 'true');
+            if (!cargado && load && load.dataset.url) {
+                cargado = true;
+                load.textContent = 'Cargando mapa…';
+                fetch(load.dataset.url)
+                    .then(function (res) {
+                        if (!res.ok) throw new Error(res.status);
+                        return res.text();
+                    })
+                    .then(function (html) {
+                        box.insertAdjacentHTML('beforeend', html);
+                        load.style.display = 'none';
+                    })
+                    .catch(function () {
+                        load.textContent = 'No se pudo cargar el mapa.';
+                    });
+            }
+        });
+    });
+})();
+</script>
+{% endblock %}

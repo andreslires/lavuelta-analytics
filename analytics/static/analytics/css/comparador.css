@@ -1,0 +1,560 @@
+/* comparador.css — Comparador cara a cara (Ediciones) */
+.comp-header { margin-bottom: 2.5rem; }
+.comp-title { font-family: 'Barlow Condensed', sans-serif; font-size: 2.25rem; color: #fff; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; }
+.comp-sub { color: var(--text-dim); margin-top: 0.5rem; font-size: 1.05rem; }
+
+/* ---------- Selector ---------- */
+.comp-selector {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  background: var(--panel-soft);
+  border: 1px solid var(--border);
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  min-height: 7.25rem;
+}
+.comp-pick { display: flex; flex-direction: column; gap: 0.4rem; }
+/* Selects de edición (pestaña Ediciones): mismo ancho que el select de año */
+.comp-selector select[name="a"],
+.comp-selector select[name="b"] { width: 9rem; }
+.comp-pick-label {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+.comp-select {
+  background: #0f0b0c;
+  border: 1px solid var(--border-strong);
+  color: #fff;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  height: 3rem;
+  padding: 0 2.5rem 0 1rem;
+  border-radius: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23F5A623' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  cursor: pointer;
+}
+.comp-vs {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 900;
+  font-size: 2rem;
+  color: var(--accent);
+  padding-bottom: 0.4rem;
+  line-height: 1;
+}
+
+/* ---------- Selector en cascada de etapas (Perfiles similares) ---------- */
+.ac-wrap.cascade { display: flex; gap: 0.5rem; }
+.ac-wrap.cascade .comp-select { padding-right: 2.25rem; }
+.ac-wrap.cascade .cal { width: 9.5rem; flex: 0 0 9.5rem; }
+.ac-wrap.cascade .stage { flex: 1 1 auto; min-width: 12rem; }
+.is-hidden { display: none !important; }
+.comp-go {
+  margin-left: auto;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.9rem;
+  padding: 0 2rem;
+  height: 3rem;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+.comp-go:hover { filter: brightness(1.15); }
+
+/* ---------- Tabs ---------- */
+.comp-tabs {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--border-strong);
+  margin-bottom: 2.5rem;
+}
+.comp-tab {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--text-dim);
+  text-decoration: none;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.9rem;
+  padding: 0.9rem 1.5rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.comp-tab:hover { color: #fff; }
+.comp-tab.is-active { color: #fff; border-bottom-color: var(--accent); }
+
+.comp-panel { display: none; }
+.comp-panel.is-active { display: block; }
+
+/* ---------- KPIs enfrentados ---------- */
+.comp-duel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.comp-side {
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--side, var(--accent));
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  padding: 1.5rem 1.75rem;
+}
+.comp-side-head { margin-bottom: 1.25rem; }
+.comp-side-year {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 900;
+  font-size: 2.5rem;
+  color: var(--side, var(--accent));
+  line-height: 1;
+}
+.comp-side-name { font-size: 0.85rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; }
+
+.comp-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem 1.25rem; }
+.comp-kpi { display: flex; flex-direction: column; }
+.comp-kpi-label {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.65rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.3rem;
+}
+.comp-kpi-value {
+  font-family: 'Barlow', sans-serif;
+  font-size: 1.75rem;
+  color: #fff;
+  font-weight: 600;
+  line-height: 1;
+}
+.comp-kpi-value small { font-family: 'Barlow', sans-serif; font-size: 0.7rem; color: var(--text-faint); }
+
+/* ---------- Extremos ---------- */
+.comp-extremes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+.comp-extreme {
+  background: var(--panel-soft);
+  border: 1px solid var(--border);
+  padding: 1.1rem 1.25rem;
+}
+.comp-extreme-tag {
+  display: inline-block;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.65rem;
+  color: var(--side, var(--accent));
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+.comp-extreme-name { display: block; font-size: 0.95rem; color: #fff; font-weight: 600; margin-bottom: 0.3rem; }
+.comp-extreme-val { font-family: 'Barlow', sans-serif; font-size: 0.9rem; color: var(--accent-gold); }
+/* Tamaño compacto propio del comparador; color y hover iguales a .edition-btn del dashboard */
+.comp-extreme-btn {
+  display: inline-block;
+  align-self: flex-start;
+  margin-top: 0.5rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  text-decoration: none;
+  border: 1px solid var(--border-strong);
+  padding: 0.3rem 0.75rem;
+  transition: all 0.15s;
+}
+.comp-extreme-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ---------- Secciones ---------- */
+.card { background: var(--panel-soft); border: 1px solid var(--border); padding: 1.25rem; }
+.comp-chart { height: 20rem; }
+/* Mapa comparativo: ocupa todo el ancho y el lienzo del mapa manda */
+/* El mapa de Folium va dentro de un <iframe> (documento aparte), así que el
+   alto hay que fijarlo en el contenedor exterior: el div de Folium usa el
+   truco de proportion (height:0 + padding-bottom:60%), que hay que anular. */
+.comp-map.comp-chart { height: auto; padding: 0; }
+.comp-map.comp-chart > div { height: 24rem !important; }
+.comp-map.comp-chart > div > div { height: 100% !important; padding-bottom: 0 !important; }
+.comp-map.comp-chart iframe { height: 100% !important; width: 100% !important; border: 0; }
+.comp-map.comp-chart .leaflet-control-zoom a { background: #141414; color: #ccc; border-color: #333; }
+.comp-map-legend {
+  display: flex;
+  gap: 1.5rem;
+  margin: 0.75rem 0 1.5rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+.comp-legend-item { display: inline-flex; align-items: center; gap: 0.5rem; }
+.comp-legend-dot { width: 0.85rem; height: 0.85rem; border-radius: 50%; display: inline-block; }
+.comp-geo-hint {
+  margin: 0 0 0.75rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+/* Ajuste de margen superior específico del comparador */
+.comp-section-title { margin: 2.5rem 0 1.25rem; }
+
+/* ---------- Tipología ---------- */
+/* El card ocupa todo el ancho (igual que las gráficas), pero la tabla se
+   acota y se centra para que la última cifra no quede pegada al borde. */
+.comp-types { max-width: none; }
+.comp-types-table { width: 100%; max-width: 34rem; margin: 0 auto; border-collapse: collapse; }
+.comp-types-table th, .comp-types-table td {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.9rem;
+}
+/* Las dos columnas de cifras a la derecha, para que se lean en columna */
+.comp-types-table th:not(:first-child),
+.comp-types-table td:not(:first-child) { text-align: right; width: 22%; }
+.comp-types-table th {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+}
+.comp-types-table td:first-child { color: var(--text-dim); }
+.comp-types-table tbody tr:last-child td { border-bottom: none; }
+
+/* ---------- Geografía ---------- */
+.comp-geo { display: grid; grid-template-columns: 1fr 1.4fr 1fr; gap: 1rem; }
+.comp-geo-col, .comp-geo-common {
+  background: var(--panel-soft);
+  border: 1px solid var(--border);
+  padding: 1.25rem 1.5rem;
+}
+.comp-geo-common { border-color: var(--border-strong); }
+.comp-geo-head {
+  display: block;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.9rem;
+  margin-bottom: 0.9rem;
+}
+.comp-geo-list { list-style: none; display: flex; flex-direction: column; gap: 0.35rem; }
+.comp-geo-list li {
+  color: var(--text);
+  font-size: 0.9rem;
+  padding-left: 1rem;
+  position: relative;
+}
+.comp-geo-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 0.45rem;
+  height: 0.45rem;
+  background: var(--accent-gold);
+}
+.comp-geo-common .comp-geo-list li::before { background: var(--accent); }
+.comp-geo-empty { color: var(--text-faint); font-size: 0.85rem; font-style: italic; }
+
+/* ---------- Perfiles similares ---------- */
+.perfil-toolbar { position: relative; align-items: flex-start; }
+/* El botón "Añadir etapa 2" y el selector de la etapa 2 crecen hacia abajo,
+   sin mover el selector 1 ni el botón de acción. */
+.perfil-picks {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.9rem;
+  min-width: min(100%, 38rem);
+}
+/* La fila del selector 1 centra verticalmente el botón de acción con él */
+.perfil-top {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.perfil-top .comp-go { position: relative; top: 0.45rem; }
+.perfil-tip {
+  flex-basis: 100%;
+  margin-top: 0.75rem;
+  margin-bottom: 1.25rem;
+  color: var(--text-faint);
+  font-size: 0.85rem;
+}
+.comp-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 3rem;
+  padding: 0 1rem;
+  border-radius: 0;
+  border: 1px solid var(--border-strong);
+  background: none;
+  color: var(--text-dim);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  margin-bottom: 0.15rem;
+  white-space: nowrap;
+}
+.comp-add-ico {
+  display: inline-block;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.comp-add:hover { color: #fff; border-color: var(--text-faint); }
+/* Fila del selector de etapa 2: el botón de quitar queda a su derecha */
+.perfil-b-row { display: flex; align-items: center; gap: 0.75rem; }
+/* Con la etapa 2 abierta, el botón se vuelve discreto: solo el icono × */
+#perfil-form.is-open .comp-add {
+  border: none;
+  background: none;
+  padding: 0.2rem 0.5rem;
+  height: auto;
+  color: var(--text-faint);
+}
+#perfil-form.is-open .comp-add-label { display: none; }
+#perfil-form.is-open .comp-add-ico { font-size: 1.25rem; line-height: 1; }
+#perfil-form.is-open .comp-add:hover { color: #fff; }
+.perfil-title { font-size: 1.25rem; color: #fff; margin-bottom: 1rem; }
+.perfil-accent { color: var(--accent-gold); }
+.perfil-hint {
+  margin-top: 1.5rem;
+  color: var(--accent);
+  font-size: 0.95rem;
+}
+.perfil-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+.perfil-one-title {
+  font-size: 1rem;
+  color: #fff;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+.perfil-one-meta { color: var(--text-faint); font-size: 0.8rem; margin-left: 0.6rem; }
+.perfil-one-route { white-space: normal; line-height: 1.3; margin-top: -0.55rem; margin-bottom: 1rem; }
+.perfil-one { display: flex; flex-direction: column; }
+/* Los dos recuadros del cara a cara comparten alto (el grid iguala .perfil-one
+   y .perfil-chart rellena la columna con flex). Dentro, la gráfica se ancla
+   abajo y el relleno sobrante queda SIEMPRE por arriba, nunca por abajo. */
+.perfil-chart {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 20rem;
+}
+.perfil-sim-banner {
+  font-family: 'Barlow', sans-serif;
+  font-size: 1.05rem;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  background: rgba(245, 166, 35, 0.08);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+}
+.perfil-rows { display: flex; flex-direction: column; gap: 0.6rem; }
+.perfil-row {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 7rem minmax(9rem, auto) 1fr;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid var(--border);
+  padding: 0.7rem 1rem;
+  color: #fff;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.perfil-row:hover { border-color: var(--accent-gold); background: rgba(245, 166, 35, 0.05); }
+.perfil-row-sim {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  color: var(--accent-gold);
+  white-space: nowrap;
+}
+.perfil-row-bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 0.35rem;
+  width: min(100%, calc(var(--w) * 1%));
+  background: var(--accent-gold);
+  border-radius: 0 0 0 0.25rem;
+}
+.perfil-row-label { font-weight: 700; white-space: nowrap; }
+.perfil-row-meta { color: var(--text-dim); font-size: 0.85rem; text-align: right; }
+.perfil-row-meta .type-icon { width: 0.75rem; height: 0.75rem; margin-right: 0.3rem; vertical-align: -0.12em; }
+/* ---------- Perfiles similares: acordeón (neutro, sin dorado) ---------- */
+.similares-acc { display: flex; flex-direction: column; gap: 0.5rem; }
+.sim-item { border-radius: 0.35rem; }
+.sim-head {
+  list-style: none;
+  border-radius: 0.35rem;
+  background: transparent;
+  transition: background 0.15s;
+}
+.sim-head::-webkit-details-marker { display: none; }
+.similares-acc .perfil-row { background: transparent; }
+.similares-acc .perfil-row:hover { border-color: var(--border-strong); background: rgba(255, 255, 255, 0.04); }
+.similares-acc .perfil-row-sim { color: var(--accent-gold); font-weight: 600; }
+.sim-route { display: block; color: var(--text-faint); font-size: 0.75rem; font-weight: 400; white-space: nowrap; }
+/* Abierto: cabecera y cuerpo comparten el mismo fondo → un único rectángulo */
+.sim-item[open] .sim-head { border-bottom: none; border-radius: 0.35rem 0.35rem 0 0; border-color: var(--border); background: var(--panel-soft); }
+.sim-item[open] .sim-arrow { transform: rotate(180deg); }
+.sim-body { border: 1px solid var(--border); border-top: none; border-radius: 0 0 0.35rem 0.35rem; padding: 0.75rem 1rem 1rem; background: var(--panel-soft); }
+.perfil-cmp { margin-top: 2.5rem; }
+
+/* ---------- Zonas comunes: acordeón (mismo patrón que Perfiles similares) ---------- */
+.zona-rows { gap: 0.5rem; }
+.zona-item {
+  border-radius: 0.35rem;
+}
+.zona-row {
+  width: 100%;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  text-align: left;
+  transition: background 0.15s;
+}
+.zona-row:hover { border-color: var(--border-strong); background: rgba(255, 255, 255, 0.04); }
+.zona-chevron {
+  display: inline-block;
+  margin-left: 0.5rem;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  transition: transform 0.2s;
+}
+.zona-item.is-open .zona-chevron { transform: rotate(180deg); }
+.zona-map-box {
+  display: none;
+}
+/* Abierto: cabecera y cuerpo comparten el mismo fondo → un único rectángulo */
+.zona-item.is-open .zona-row {
+  border-bottom: none;
+  border-radius: 0.35rem 0.35rem 0 0;
+  border-color: var(--border);
+  background: var(--panel-soft);
+}
+.zona-item.is-open .zona-map-box {
+  display: block;
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 0.35rem 0.35rem;
+  padding: 0.75rem 1rem 1rem;
+  background: var(--panel-soft);
+}
+.zona-map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+}
+.zona-map-load { color: var(--text-dim); font-size: 0.9rem; padding: 0.5rem 0; }
+.zona-map-frame {
+  display: block;
+  width: 100%;
+  height: 30rem;
+  max-height: 60vh;
+  border: 0;
+  border-radius: 0.35rem;
+  background: #14161a;
+}
+.perfil-table { max-width: 46rem; }
+
+/* ---------- Placeholders de fases posteriores ---------- */
+.comp-placeholder {
+  border: 1px dashed var(--border-strong);
+  padding: 4rem 2rem;
+  text-align: center;
+  background: var(--panel-soft);
+}
+.comp-placeholder-index {
+  font-family: 'Barlow', sans-serif;
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  margin-bottom: 1rem;
+}
+.comp-placeholder-title { font-size: 2rem; color: #fff; margin-bottom: 0.75rem; }
+.comp-placeholder-text { color: var(--text-dim); max-width: 34rem; margin: 0 auto; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .comp-duel { grid-template-columns: 1fr; }
+  .comp-extremes { grid-template-columns: repeat(2, 1fr); }
+  .comp-geo { grid-template-columns: 1fr; }
+  .comp-kpis { grid-template-columns: repeat(3, 1fr); }
+  .perfil-pair { grid-template-columns: 1fr; }
+  .perfil-chart { min-height: 16rem; }
+  .perfil-row { grid-template-columns: 6rem 1fr; }
+  .perfil-row-meta { grid-column: 2; text-align: left; }
+}
+@media (max-width: 560px) {
+  .comp-extremes { grid-template-columns: 1fr; }
+  .comp-kpis { grid-template-columns: repeat(2, 1fr); }
+  .comp-title { font-size: 2.5rem; }
+  .comp-tabs { flex-wrap: wrap; }
+}
+
+/* ---------- Responsive adicional (solo móvil; portátil intacto) ---------- */
+@media (max-width: 640px) {
+  .comp-selector { padding: 1.25rem 1rem; gap: 1rem; }
+  .comp-selector .comp-pick { flex: 1 1 100%; }
+  .comp-selector select[name="a"],
+  .comp-selector select[name="b"] { width: 100%; }
+  .comp-vs { align-self: center; padding-bottom: 0; }
+  .comp-go { width: 100%; margin-left: 0; }
+  .perfil-top { flex-direction: column; align-items: stretch; gap: 1rem; }
+  .perfil-top .comp-go { width: 100%; top: 0; margin-left: 0; }
+  .perfil-toolbar { flex-direction: column; align-items: stretch; }
+  .ac-wrap.cascade { flex-wrap: wrap; }
+  .ac-wrap.cascade .cal { flex: 1 1 100%; }
+  .ac-wrap.cascade .stage { flex: 1 1 100%; min-width: 0; }
+  .comp-types.card, .perfil-cmp { overflow-x: auto; }
+  .comp-types-table { min-width: 16rem; }
+  .comp-chart { min-width: 0; }
+}

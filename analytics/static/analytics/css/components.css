@@ -1,0 +1,199 @@
+/* components.css — Estilos compartidos entre vistas (se cargan tras base.css).
+   La idea: lo que se repite en varias páginas vive aquí una sola vez y cada
+   vista solo añade lo específico. Base orientada a escritorio (desktop-first):
+   los breakpoints colapsan hacia móvil con @media (max-width).
+*/
+
+/* ---------- Iconos SVG (sprite en _icons.html) ---------- */
+.ico {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: -0.125em;
+}
+.ico-sprite { display: none; }
+
+/* ---------- Título de sección + índice (común a dashboard, edición, comparador) ---------- */
+.section-title, .ed-section-title, .comp-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+  margin-top: 3.5rem;
+  font-size: 1.25rem;
+  color: #fff;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 1.75rem;
+}
+.section-title:first-child, .ed-section-title:first-child, .comp-section-title:first-child {
+  border-top: none;
+  margin-top: 0;
+}
+.section-index, .ed-section-index, .comp-section-index {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-faint);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+/* ---------- Tarjeta / panel base (fondo + borde suave) ---------- */
+.card, .chart-card, .geo-chart, .ed-chart, .edition-card,
+.ed-stat-card, .stage-card, .comp-side, .comp-extreme, .comp-geo-col, .comp-geo-common {
+  background: var(--panel-soft);
+  border: 1px solid var(--border);
+  padding: 1.25rem;
+}
+
+/* Tarjetas con acento superior de color (stat cards) */
+.stat-card, .geo-stat, .ed-stat-card {
+  padding: 1.5rem 1.75rem;
+  border-top-width: 2px;
+}
+
+/* ---------- Rejilla de contenido en dos columnas (mapa + perfil) ---------- */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+/* ---------- Loader de recorrido (indicador de carga HTMX) ---------- */
+/* Concepto propio: la línea roja del recorrido se "pinta" sobre una carretera
+   mientras un punto blanco avanza hacia la meta. Indeterminado (loop). */
+.route-loader {
+  display: none;
+  max-width: 30rem;
+}
+.route-loader.htmx-request { display: block; }
+
+.route-loader-road {
+  position: relative;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--border-strong) 0 12px,
+    transparent 12px 24px
+  );
+}
+.route-loader-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  transform-origin: left center;
+  background: linear-gradient(90deg, var(--accent), rgba(227, 21, 43, 0.35));
+  animation: route-draw 1.5s linear infinite;
+}
+.route-loader-dot {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 3px var(--accent);
+  animation: route-dot 1.5s linear infinite;
+}
+.route-loader-label {
+  margin-top: 0.65rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+}
+
+@keyframes route-draw {
+  0%   { transform: scaleX(0); opacity: 1; }
+  60%  { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+@keyframes route-dot {
+  0%   { left: 0; opacity: 1; }
+  60%  { left: calc(100% - 10px); opacity: 1; }
+  100% { left: calc(100% - 10px); opacity: 0; }
+}
+
+/* ---------- Overlay de carga a pantalla completa ---------- */
+/* Concepto propio (inspirado en la idea de pantalla de carga, no copiado):
+   la marca centrada y la línea roja que pinta la ruta sobre la carretera.
+   HTMX añade .htmx-request al elemento indicador durante la petición
+   (`hx-indicator="#page-loader"`), lo que muestra y desvanece el overlay. */
+.page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+.page-loader.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.page-loader__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: min(78%, 26rem);
+}
+.page-loader__logo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 2.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+.page-loader__logo em {
+  font-style: normal;
+  color: #fff;
+  margin-left: 0.45rem;
+}
+.page-loader__logo::after {
+  content: '';
+  display: block;
+  height: 2px;
+  margin-top: 5px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-gold));
+}
+.page-loader__brand .route-loader-road { width: 100%; }
+
+@media (prefers-reduced-motion: reduce) {
+  .route-loader-line,
+  .route-loader-dot { animation: none; }
+  .route-loader-line { transform: scaleX(1); opacity: 1; }
+  .route-loader-dot { left: calc(100% - 10px); opacity: 1; }
+  .page-loader { transition: none; }
+}
+
+/* ---------- Responsive global (desktop-first) ---------- */
+@media (max-width: 1024px) {
+  .content-grid { grid-template-columns: 1fr; }
+  .section-title, .ed-section-title { font-size: 1.05rem; }
+}
+@media (max-width: 640px) {
+  .section-title, .ed-section-title, .comp-section-title { font-size: 1rem; }
+}

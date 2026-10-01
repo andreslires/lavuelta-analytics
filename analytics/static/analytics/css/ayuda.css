@@ -1,0 +1,145 @@
+/* ayuda.css — Página de ayuda / modo de uso */
+
+.ayuda-header {
+  margin-bottom: 3.5rem;
+  max-width: 46rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 2.75rem;
+}
+.ayuda-eyebrow {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  margin-bottom: 1.25rem;
+}
+.ayuda-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(2.5rem, 6vw, 3.5rem);
+  color: #fff;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+.ayuda-title::after {
+  content: '';
+  display: block;
+  width: 6rem;
+  height: 2px;
+  margin-top: 0.9rem;
+  background: linear-gradient(90deg, var(--accent), var(--accent-gold));
+}
+.ayuda-subtitle {
+  color: var(--text-dim);
+  margin-top: 1.25rem;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+/* ---------- Índice de navegación ---------- */
+.ayuda-index {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.ayuda-index-card {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: var(--panel-soft);
+  border: 1px solid var(--border);
+  padding: 0.9rem 1.1rem;
+  color: var(--text-dim);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  transition: color 0.15s, border-color 0.15s;
+}
+.ayuda-index-card:hover { color: #fff; border-color: var(--accent); }
+.ayuda-index-num { color: var(--text-faint); font-size: 0.8rem; }
+
+/* ---------- Secciones ---------- */
+.ayuda-section { margin-bottom: 3.5rem; max-width: 48rem; scroll-margin-top: 6rem; }
+
+.ayuda-lead {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+.ayuda-lead strong { color: #fff; font-weight: 600; }
+
+/* ---------- Definiciones (término + descripción) ---------- */
+.ayuda-defs { margin: 0; }
+.ayuda-def {
+  display: grid;
+  grid-template-columns: 12rem 1fr;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-top: 1px solid var(--border);
+}
+.ayuda-def:last-child { border-bottom: 1px solid var(--border); }
+.ayuda-def dt {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.ayuda-def dd {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 0.925rem;
+  line-height: 1.65;
+}
+
+/* ---------- Subapartados (pestañas del comparador) ---------- */
+.ayuda-sub {
+  background: var(--panel-soft);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--border-strong);
+  padding: 1.1rem 1.4rem 1.25rem;
+  margin-bottom: 1rem;
+  transition: border-color 0.15s;
+}
+.ayuda-sub:hover { border-color: var(--border-strong); }
+.ayuda-sub:last-child { margin-bottom: 0; }
+.ayuda-sub-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  font-size: 0.95rem;
+  color: #fff;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  margin-bottom: 0.6rem;
+}
+.ayuda-sub p { color: var(--text-dim); font-size: 0.925rem; line-height: 1.7; }
+.ayuda-sub strong { color: #fff; font-weight: 600; }
+
+/* ---------- Código ---------- */
+.ayuda-section code, .ayuda-sub code {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--text-faint);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.ayuda-def dt code { font-size: 0.75em; vertical-align: middle; }
+
+@media (max-width: 640px) {
+  .ayuda-title { font-size: 2.5rem; }
+  .ayuda-def { grid-template-columns: 1fr; gap: 0.35rem; }
+}

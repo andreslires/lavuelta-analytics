@@ -1,0 +1,15 @@
+{% comment %}
+Icono SVG según el tipo de etapa. Se pasa el tipo en el contexto:
+  {% include 'analytics/_tipo_icono.html' with tipo=etapa.tipo %}
+El aspecto (trazo fino, color actual del contorno) lo da la clase .ico de
+components.css; cada uso añade su tamaño/posición con su propia clase.
+{% endcomment %}
+<svg class="ico type-icon" role="img" aria-label="{{ tipo }}" title="{{ tipo }}">
+    {% if tipo == 'Contrarreloj' %}<use href="#ix-clock"/>
+    {% elif tipo == 'Llana' %}<use href="#ix-flat"/>
+    {% elif tipo == 'Media montaña' %}<use href="#ix-rolling"/>
+    {% elif tipo == 'Montaña' %}<use href="#ix-mountain"/>
+    {% elif tipo == 'Alta montaña' %}<use href="#ix-high"/>
+    {% else %}<use href="#ix-route"/>
+    {% endif %}
+</svg>

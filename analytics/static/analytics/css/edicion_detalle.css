@@ -1,0 +1,224 @@
+/* edicion_detalle.css — Listado de etapas de una edicion */
+.edicion-header { margin-bottom: 3rem; }
+.edicion-title { font-family: 'Barlow Condensed', sans-serif; font-size: 3.75rem; color: #fff; font-weight: 900; text-transform: uppercase; }
+.edicion-year { font-size: 1.5rem; color: var(--accent-gold); font-family: 'Barlow', sans-serif; margin-top: 0.5rem; }
+
+/* Datos factuales de la edición (fechas, ganador) */
+.edicion-factual {
+  margin-top: 1rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  line-height: 1.8;
+}
+.edicion-factual .edicion-factual-strong { color: var(--accent-gold); font-weight: 700; }
+
+/* Resultados de la edición (GC y maillots, factuales) */
+.ed-resultados {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 4rem;
+}
+.ed-resultado-panel {
+  background: var(--panel-soft);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--accent-gold);
+  padding: 1.5rem 1.75rem;
+}
+.ed-resultado-list { list-style: none; margin-top: 0.75rem; }
+.ed-resultado-list li {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr auto;
+  gap: 0.75rem;
+  align-items: baseline;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+.ed-resultado-list li:last-child { border-bottom: none; }
+.ed-resultado-pos { font-family: 'Barlow', sans-serif; color: var(--text-faint); white-space: nowrap; }
+.ed-resultado-line {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-width: 0;
+}
+.ed-resultado-rider { color: #fff; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ed-resultado-team { color: var(--text-dim); font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ed-resultado-gap { font-family: 'Barlow', sans-serif; color: var(--accent-gold); white-space: nowrap; }
+
+/* ---------- Mini-dashboard de la edición ---------- */
+.ed-stats-section { margin-bottom: 4rem; }
+
+.ed-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.ed-stat-card {
+  background: var(--panel-soft);
+  border: 1px solid var(--border);
+  padding: 1.5rem 1.75rem;
+  border-top: 2px solid var(--accent);
+}
+
+.ed-stat-label {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.ed-stat-value {
+  font-family: 'Barlow', sans-serif;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  color: #fff;
+  line-height: 1;
+  font-weight: 600;
+}
+.ed-stat-value .unit {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-faint);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-left: 0.25rem;
+}
+
+.ed-stats-secondary {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.5rem;
+  background: var(--panel-soft);
+  padding: 1.75rem 2rem;
+  border: 1px solid var(--border);
+  margin-bottom: 2.5rem;
+}
+
+.ed-stat-item-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.35rem;
+}
+
+.ed-stat-item-value {
+  font-size: 1.375rem;
+  color: #fff;
+  font-family: 'Barlow', sans-serif;
+}
+.ed-stat-item-value span { font-size: 0.75rem; color: var(--text-faint); font-family: 'Barlow', sans-serif; }
+.ed-stat-item-value.accent { color: var(--accent); font-size: 0.875rem; font-weight: 600; }
+
+.ed-stat-item-strong {
+  font-size: 1.125rem;
+  color: #fff;
+  font-weight: 700;
+}
+
+.ed-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+.ed-chart {
+  background: var(--panel-soft);
+  border: 1px solid var(--border);
+  padding: 1.25rem;
+}
+.ed-chart .chart-body { height: 17rem; }
+.ed-chart .ed-stat-item-label { margin-bottom: 1rem; }
+.ed-chart-wide { grid-column: 1 / -1; }
+.ed-chart-wide .chart-body { height: 12rem; }
+
+.stages-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+
+.stage-card {
+  position: relative;
+  border: 1px solid var(--border);
+  padding: 1.5rem 1.5rem 1.75rem;
+  background: var(--panel-soft);
+  transition: border-color 0.3s;
+}
+.stage-card:hover { border-color: var(--accent); }
+
+.stage-number { font-size: 1.125rem; color: #fff; font-weight: 700; margin-bottom: 0.25rem; }
+.stage-card .type-icon {
+  position: absolute;
+  top: 1.35rem;
+  right: 1.5rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  color: var(--accent-gold-soft);
+  opacity: 0.85;
+}
+.stage-card:hover .type-icon { opacity: 1; }
+.stage-name {
+  font-size: 0.875rem;
+  color: var(--text-dim);
+  margin-bottom: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stage-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--accent-gold-soft);
+  font-family: 'Barlow', sans-serif;
+  margin-bottom: 1.5rem;
+}
+
+/* Sparkline de perfil dentro de la tarjeta: el mini "recorrido" va entre la
+   meta y el botón, contenido entre los bordes del recuadro. */
+.stage-card__profile {
+  height: 40px;
+  margin: 0 0 1.25rem;
+  padding: 0 0.25rem;
+  overflow: hidden;
+  opacity: 0.9;
+}
+.stage-card__profile svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.stage-card:hover .stage-card__profile { opacity: 1; }
+
+.stage-link {
+  display: block;
+  text-align: center;
+  border: 1px solid var(--border-strong);
+  padding: 0.5rem 0;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text);
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.stage-link:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+@media (max-width: 1024px) {
+  .stages-grid { grid-template-columns: repeat(2, 1fr); }
+  .ed-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .ed-stats-secondary { grid-template-columns: repeat(2, 1fr); }
+  .ed-charts { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .stages-grid { grid-template-columns: 1fr; }
+  .ed-stats-grid { grid-template-columns: 1fr; }
+  .ed-stats-secondary { grid-template-columns: 1fr; }
+  .edicion-title { font-size: 2.5rem; }
+  .ed-resultados { grid-template-columns: 1fr; }
+}

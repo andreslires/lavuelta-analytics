@@ -1,0 +1,71 @@
+{% extends 'analytics/base.html' %}
+{% load static %}
+{% block title %}Mapa general{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'analytics/css/mapa_general.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="map-header">
+    <h1 class="map-title">Distribución Geográfica</h1>
+    <p class="map-subtitle"></p>
+</div>
+
+<!-- ---------- Tabs ---------- -->
+<div class="map-tabs" role="tablist">
+    <a class="map-tab {% if tab == 'etapas' %}is-active{% endif %}" href="{% url 'mapa_general' %}?tab=etapas" role="tab">Etapas</a>
+    <a class="map-tab {% if tab == 'provincias' %}is-active{% endif %}" href="{% url 'mapa_general' %}?tab=provincias" role="tab">Provincias</a>
+</div>
+
+<!-- ================= TAB ETAPAS ================= -->
+<section class="map-panel {% if tab == 'etapas' %}is-active{% endif %}" data-panel="etapas">
+    <p class="map-hint">Haz clic en una etapa para ver más información.</p>
+    <div class="map-frame">
+        {{ map_html|safe }}
+    </div>
+</section>
+
+<!-- ================= TAB PROVINCIAS ================= -->
+<section class="map-panel {% if tab == 'provincias' %}is-active{% endif %}" data-panel="provincias">
+    <p class="map-hint">Haz clic en una provincia para ver la última etapa que pasó por ella.</p>
+    <div class="map-frame map-frame--compact">
+        {{ provincias_html|safe }}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    // Móvil: ajusta el mapa de provincias (sin zoom/arrastre) para que
+    // España entera entre en pantallas estrechas. En portátil no se toca nada.
+    function fitProvinciasMovil() {
+        var mm = window.matchMedia('(max-width: 640px)');
+        if (!mm.matches) return;
+        var frame = document.querySelector('.map-frame--compact');
+        if (!frame) return;
+        var el = frame.querySelector('.folium-map');
+        if (!el || !el.id) return;
+        var mapa = window[el.id];
+        if (!mapa || typeof mapa.fitBounds !== 'function') return;
+        mapa.fitBounds([[27.5, -18.5], [43.9, 4.4]], { padding: [24, 24] });
+    }
+
+    function resizeMaps() {
+        document.querySelectorAll('.folium-map').forEach(function (el) {
+            if (el._leaflet_id) {
+                var id = '_leaflet_map_' + el._leaflet_id;
+                if (window[id]) window[id].invalidateSize();
+            }
+        });
+    }
+
+    window.addEventListener('load', function () {
+        setTimeout(resizeMaps, 150);
+        setTimeout(fitProvinciasMovil, 300);
+    });
+    window.addEventListener('resize', fitProvinciasMovil);
+})();
+</script>
+{% endblock %}

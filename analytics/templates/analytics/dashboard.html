@@ -1,0 +1,137 @@
+{% extends 'analytics/base.html' %}
+{% load static %}
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'analytics/css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<header class="dashboard-header">
+    <p class="dashboard-eyebrow">La Vuelta · Analytics · 2011–2026</p>
+    <h1 class="dashboard-title">Análisis<br><span class="accent">La Vuelta</span></h1>
+    <p class="dashboard-subtitle">
+    </p>
+</header>
+
+<section class="stats-section">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <p class="stat-label">Ediciones</p>
+            <p class="stat-value">{{ total_ediciones }}</p>
+        </div>
+        <div class="stat-card">
+            <p class="stat-label">Total Etapas</p>
+            <p class="stat-value">{{ total_etapas }}</p>
+        </div>
+        <div class="stat-card">
+            <p class="stat-label">Total Distancia</p>
+            <p class="stat-value">{{ total_km|floatformat:0 }} <span class="unit">KM</span></p>
+        </div>
+        <div class="stat-card">
+            <p class="stat-label">Desnivel Acumulado</p>
+            <p class="stat-value">{{ total_desnivel|floatformat:0 }} <span class="unit">M</span></p>
+        </div>
+    </div>
+</section>
+
+<section class="map-preview-section">
+    <h2 class="section-title"><span class="section-index">01</span> Mapa General</h2>
+    <a href="{% url 'mapa_general' %}" class="map-preview-link">
+        <div class="map-preview">{{ map_preview_html|safe }}</div>
+        <span class="map-preview-label">Abrir mapa interactivo</span>
+    </a>
+</section>
+
+<section class="geo-section">
+    <h2 class="section-title"><span class="section-index">02</span> Datos geográficos</h2>
+    <div class="geo-stats">
+        <div class="geo-stat">
+            <p class="geo-stat-label">Comunidades visitadas</p>
+            <p class="geo-stat-value">{{ geo_comunidades }} <span class="unit">de 19</span></p>
+        </div>
+        <div class="geo-stat">
+            <p class="geo-stat-label">Comunidad más recorrida</p>
+            <p class="geo-stat-value">{{ geo_top.name }} <span class="unit">{{ geo_top.etapas }} etapas</span></p>
+        </div>
+        <div class="geo-stat">
+            <p class="geo-stat-label">Etapas fuera de España</p>
+            <p class="geo-stat-value">{{ geo_fuera }} <span class="unit">con tramo extranjero</span></p>
+        </div>
+    </div>
+    <div class="geo-chart card">
+        <p class="geo-chart-label">Etapas por comunidad autónoma (todas las ediciones)</p>
+        <div class="geo-chart-body">{{ geo_chart_html|safe }}</div>
+    </div>
+</section>
+
+<h2 class="section-title"><span class="section-index">03</span> Comparativa de ediciones</h2>
+<div class="filter-bar">
+    <span class="filter-label">Comparar ediciones:</span>
+    <div class="dropdown filter-dropdown">
+        <button type="button" class="filter-trigger">
+            Ediciones (<span class="filter-count">{{ selected_years|length }}</span>) <svg class="ico ico-caret" aria-hidden="true"><use href="#ix-chevron"/></svg>
+        </button>
+        <div class="dropdown-menu filter-menu">
+            <form id="filtro-ediciones" hx-get="{% url 'dashboard_charts' %}" hx-target="#charts-section" hx-trigger="change" hx-swap="innerHTML" hx-indicator="#charts-loading">
+                {% for ed in filtro_ediciones %}
+                <label class="filter-option">
+                    <input type="checkbox" name="ediciones" value="{{ ed.year }}" data-color="{{ ed.color }}" {% if ed.year in selected_years %}checked{% endif %}>
+                    <span class="filter-check" style="--dot-color: {{ ed.color }}"></span>
+                    <span>{{ ed.year }}</span>
+                </label>
+                {% endfor %}
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const form = document.getElementById('filtro-ediciones');
+    if (!form) return;
+    form.addEventListener('change', function (e) {
+        if (e.target.name !== 'ediciones') return;
+        const checks = [...form.querySelectorAll('input[name="ediciones"]')];
+        const sel = checks.filter(function (c) { return c.checked; });
+        const dd = form.closest('.filter-dropdown');
+        dd.querySelector('.filter-count').textContent = sel.length;
+        // Actualiza la URL (compartible / recargable) con las ediciones seleccionadas.
+        // Si la selección es la por defecto (todas, o ninguna = todas), la URL
+        // queda limpia: sin parámetros ediciones.
+        const isDefault = sel.length === 0 || sel.length === checks.length;
+        const params = isDefault ? [] : sel.map(function (c) { return 'ediciones=' + c.value; });
+        history.pushState({}, '', '/' + (params.length ? '?' + params.join('&') : ''));
+    });
+})();
+</script>
+
+<div class="route-loader" id="charts-loading">
+    <div class="route-loader-road">
+        <span class="route-loader-line"></span>
+        <span class="route-loader-dot"></span>
+    </div>
+    <p class="route-loader-label">Cargando gráficas…</p>
+</div>
+
+<div id="charts-section">
+    {% include 'analytics/partials/charts.html' %}
+</div>
+
+<section>
+    <h2 class="section-title"><span class="section-index">04</span> Detalle de ediciones</h2>
+    <div class="editions-grid">
+        {% for t in edicion_tarjetas %}
+        <div class="edition-card">
+            <h3 class="edition-name">{{ t.nombre }}</h3>
+            {% comment %} <p class="edition-year"><span class="dot" style="--dot-color: {{ t.color }}"></span>{{ t.year }}</p> {% endcomment %}
+            <div class="edition-stats">
+                <div style="color: var(--accent-gold)"><span class="edition-stat-label">KM</span> {{ t.total_km|floatformat:0 }}</div>
+                <div  style="color: var(--accent-gold)"><span class="edition-stat-label">DESNIVEL</span> {{ t.total_d|floatformat:0 }}m</div>
+            </div>
+            <a href="{% url 'edicion_detalle' t.year %}" class="edition-btn">Explorar Edición</a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

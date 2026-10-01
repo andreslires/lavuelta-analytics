@@ -1,0 +1,164 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}La Vuelta Analytics{% endblock %}</title>
+    <meta name="description" content="{% block description %}Dashboard para analizar los datos de La Vuelta a España 2011-2026: ediciones, etapas, perfiles y comparativas.{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{% block og_title %}La Vuelta Analytics{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Dashboard para analizar los datos de La Vuelta a España 2011-2026.{% endblock %}">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <link rel="icon" type="image/svg+xml" href="{% static 'analytics/favicon.svg' %}">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="{% static 'analytics/vendor/plotly.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'analytics/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'analytics/css/components.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% include 'analytics/_icons.html' %}
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <a href="/" class="logo">
+                <span class="logo-title">La&nbsp;Vuelta<em>Analytics</em></span>
+            </a>
+            <button class="nav-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-links">
+                <span class="nav-toggle-bar"></span>
+                <span class="nav-toggle-bar"></span>
+                <span class="nav-toggle-bar"></span>
+            </button>
+            <div class="nav-links" id="nav-links">
+                <a href="/" class="nav-link" {% if request.path == '/' %}aria-current="page"{% endif %}>Dashboard</a>
+                <a href="{% url 'mapa_general' %}" class="nav-link" {% if request.path == '/mapa-general/' %}aria-current="page"{% endif %}>Mapa</a>
+                <a href="{% url 'comparar' %}" class="nav-link" {% if request.path == '/comparar/' %}aria-current="page"{% endif %}>Comparar</a>
+                <div class="dropdown">
+                    <button class="nav-link" type="button">Ediciones <svg class="ico ico-caret" aria-hidden="true"><use href="#ix-chevron"/></svg></button>
+                    <div class="dropdown-menu">
+                        {% for ed in all_ediciones %}
+                        <a href="{% url 'edicion_detalle' ed.year %}" class="dropdown-item">{{ ed.nombre }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <a href="{% url 'ayuda' %}" class="nav-link nav-ayuda" {% if request.path == '/ayuda/' %}aria-current="page"{% endif %} aria-label="Ayuda" title="Ayuda"><svg class="ico" aria-hidden="true"><use href="#ix-help"/></svg></a>
+            </div>
+        </div>
+    </nav>
+    <main class="main-container">
+        {% block content %}{% endblock %}
+    </main>
+    <div class="page-loader" id="page-loader" role="status" aria-live="polite" aria-label="Cargando">
+        <div class="page-loader__brand">
+            <span class="page-loader__logo">La&nbsp;Vuelta<em>Analytics</em></span>
+            <div class="route-loader-road">
+                <span class="route-loader-line"></span>
+                <span class="route-loader-dot"></span>
+            </div>
+        </div>
+    </div>
+    <script>
+    (function () {
+        var toggle = document.querySelector('.nav-toggle');
+        var links = document.getElementById('nav-links');
+        if (!toggle || !links) return;
+        toggle.addEventListener('click', function () {
+            var open = links.classList.toggle('open');
+            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        // Cierra el menú al pulsar un enlace dentro (navegación no-HTMX)
+        links.querySelectorAll('a').forEach(function (a) {
+            a.addEventListener('click', function () {
+                links.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+            });
+        });
+    })();
+    </script>
+    {% block extra_js %}{% endblock %}
+    <script>
+    // Overlay de carga a pantalla completa: cubre cualquier espera perceptible
+    //  - recarga inicial de la página si los recursos tardan;
+    //  - navegación normal por enlace (se muestra justo antes de que el
+    //    navegador abandone la página; la siguiente la mantiene mientras carga).
+    (function () {
+        if (window.__pageLoaderInit) return;
+        window.__pageLoaderInit = true;
+
+        var SHOW_AFTER = 200;  // ms: retardo antes de mostrarse (evita parpadear en cargas rápidas)
+        var MIN_SHOW = 250;    // ms: tiempo mínimo visible una vez mostrado
+        var LOAD_WATCH = 100;  // ms: espera en la carga inicial antes de mostrarse
+
+        var shownAt = 0;
+        var hideTimer = null;
+
+        function getLoader() {
+            var el = document.getElementById('page-loader');
+            return el && el.isConnected ? el : null;
+        }
+
+        function show() {
+            clearTimeout(hideTimer);
+            var el = getLoader();
+            if (!el) return;
+            shownAt = performance.now();
+            el.classList.add('is-visible');
+        }
+
+        function hide() {
+            clearTimeout(hideTimer);
+            var wait = MIN_SHOW - (performance.now() - shownAt);
+            var apply = function () {
+                var el = getLoader();
+                if (el) el.classList.remove('is-visible');
+            };
+            if (wait > 0) hideTimer = setTimeout(apply, wait); else apply();
+        }
+
+        // Navegación normal: enlace a otra página del sitio. Se intercepta el
+        // clic para pintar el overlay antes de que el navegador abandone la
+        // página (sin pausa imperceptible de 120 ms) y se navega después; la
+        // siguiente página lo mantiene mientras carga.
+        document.addEventListener('click', function (e) {
+            if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+            var target = e.target;
+            if (target && !(target instanceof Element)) target = target.parentElement;
+            if (!target || !target.closest) return;
+            var a = target.closest('a[href]');
+            if (!a) return;
+            var href = a.getAttribute('href') || '';
+            if (href.charAt(0) === '#' || a.hasAttribute('download') || a.target === '_blank') return;
+            if (a.origin !== window.location.origin) return;
+            e.preventDefault();
+            show();
+            setTimeout(function () { window.location.href = href; }, 120);
+        });
+
+        // Carga inicial: si la página tarda, se muestra el overlay hasta que el
+        // navegador termina (window load); se anula si los recursos vuelven.
+        if (document.readyState === 'loading') {
+            var loadTimer = setTimeout(show, LOAD_WATCH);
+            window.addEventListener('load', function () {
+                clearTimeout(loadTimer);
+                hide();
+            });
+            window.addEventListener('beforeunload', function () {
+                clearTimeout(loadTimer);
+            });
+        }
+
+        // La caché bfcache restaura la página tal cual y NO vuelve a disparar
+        // 'load': si se salió con un clic, el overlay quedó visible y "atrás"
+        // lo devuelve en pantalla. 'pageshow' sí se dispara al restaurar.
+        window.addEventListener('pageshow', function () {
+            clearTimeout(loadTimer);
+            clearTimeout(hideTimer);
+            var el = getLoader();
+            if (el) el.classList.remove('is-visible');
+            shownAt = 0;
+        });
+    })();
+    </script>
+</body>
+</html>

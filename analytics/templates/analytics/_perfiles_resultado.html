@@ -1,0 +1,61 @@
+{% if perfil_hint %}
+<p class="perfil-hint">{{ perfil_hint }}</p>
+{% endif %}
+
+{% if perfil_a_html and perfil_b_html %}
+<div class="perfil-pair">
+    <div class="perfil-one">
+        <h3 class="perfil-one-title">Etapa A · <span class="perfil-accent">{{ perfil_e1.edicion.year }} · Etapa {{ perfil_e1.numero }}</span> <span class="perfil-one-meta">{{ perfil_e1.distancia|floatformat:0 }} km · {{ perfil_e1.tipo }}</span></h3>
+        {% if perfil_e1.localidad_inicio or perfil_e1.localidad_fin %}<p class="sim-route perfil-one-route">{{ perfil_e1.localidad_inicio }} → {{ perfil_e1.localidad_fin }}</p>{% endif %}
+        <div class="perfil-chart card">{{ perfil_a_html|safe }}</div>
+        <a class="comp-extreme-btn" href="{% url 'etapa_detalle' perfil_e1.edicion.year perfil_e1.numero %}">Ver detalle</a>
+    </div>
+
+    <div class="perfil-one">
+        <h3 class="perfil-one-title">Etapa B · <span class="perfil-accent">{{ perfil_e2.edicion.year }} · Etapa {{ perfil_e2.numero }}</span> <span class="perfil-one-meta">{{ perfil_e2.distancia|floatformat:0 }} km · {{ perfil_e2.tipo }}</span></h3>
+        {% if perfil_e2.localidad_inicio or perfil_e2.localidad_fin %}<p class="sim-route perfil-one-route">{{ perfil_e2.localidad_inicio }} → {{ perfil_e2.localidad_fin }}</p>{% endif %}
+        <div class="perfil-chart card">{{ perfil_b_html|safe }}</div>
+        <a class="comp-extreme-btn" href="{% url 'etapa_detalle' perfil_e2.edicion.year perfil_e2.numero %}">Ver detalle</a>
+    </div>
+</div>
+
+{% if perfil_m1 and perfil_m2 %}
+<div class="perfil-cmp">
+    <div class="perfil-sim-banner">Similitud de perfil: <span class="perfil-accent">{{ perfil_sim_pct }}%</span></div>
+    <h3 class="perfil-title">Comparación de métricas</h3>
+    <table class="comp-types-table perfil-table">
+        <thead>
+            <tr>
+                <th>Métrica</th>
+                <th style="color:{{ color_a }}">A · {{ perfil_m1.edicion }} Et. {{ perfil_m1.numero }}</th>
+                <th style="color:{{ color_b }}">B · {{ perfil_m2.edicion }} Et. {{ perfil_m2.numero }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Tipo</td><td>{{ perfil_m1.tipo }}</td><td>{{ perfil_m2.tipo }}</td></tr>
+            <tr><td>Distancia</td><td>{{ perfil_m1.distancia|floatformat:1 }} km</td><td>{{ perfil_m2.distancia|floatformat:1 }} km</td></tr>
+            <tr><td>Desnivel +</td><td>{{ perfil_m1.desnivel|floatformat:0 }} m</td><td>{{ perfil_m2.desnivel|floatformat:0 }} m</td></tr>
+            <tr><td>Pendiente máx</td><td>{{ perfil_m1.pendiente_max|floatformat:1 }} %</td><td>{{ perfil_m2.pendiente_max|floatformat:1 }} %</td></tr>
+            <tr><td>Pendiente media puertos</td><td>{{ perfil_m1.pendiente_media|floatformat:1 }} %</td><td>{{ perfil_m2.pendiente_media|floatformat:1 }} %</td></tr>
+            <tr><td>Puertos</td><td>{{ perfil_m1.n_puertos }}</td><td>{{ perfil_m2.n_puertos }}</td></tr>
+            <tr><td>Altitud máx</td><td>{{ perfil_m1.altitud_max|floatformat:0 }} m</td><td>{{ perfil_m2.altitud_max|floatformat:0 }} m</td></tr>
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% elif perfil_similares %}
+<h3 class="perfil-one-title">Etapas más parecidas a <span class="perfil-accent">{{ perfil_e1.edicion.year }} · Etapa {{ perfil_e1.numero }}</span></h3>
+<div class="similares-acc" id="similares-acc">
+    {% for sim, e in perfil_similares %}
+    <details class="sim-item" data-p1="{{ perfil_e1.id }}" data-p2="{{ e.id }}">
+        <summary class="perfil-row zona-row sim-head">
+            <span class="perfil-row-sim">{{ forloop.counter }} · {% widthratio sim 1 100 %}%</span>
+            <span class="perfil-row-label">{{ e.edicion.year }} · Etapa {{ e.numero }}{% if e.localidad_inicio or e.localidad_fin %}<span class="sim-route">{{ e.localidad_inicio }} → {{ e.localidad_fin }}</span>{% endif %}</span>
+            <span class="perfil-row-meta">{% include 'analytics/_tipo_icono.html' with tipo=e.tipo %}{{ e.tipo }} · {{ e.distancia|floatformat:0 }} km · {{ e.desnivel|floatformat:0 }} m+ <span class="zona-chevron sim-arrow" aria-hidden="true"><svg class="ico"><use href="#ix-chevron"/></svg></span></span>
+        </summary>
+        <div class="sim-body"></div>
+    </details>
+    {% endfor %}
+</div>
+{% endif %}

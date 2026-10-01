@@ -1,0 +1,262 @@
+/* base.css — Tipografia, layout base, navbar y dropdown */
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;900&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+
+:root {
+  --bg: #0B0A08;
+  --panel: #171112;
+  --panel-soft: rgba(23, 17, 18, 0.45);
+  --border: #2b1f20;
+  --border-strong: #4a3233;
+  --text: #F0E7DC;
+  --text-dim: #c4a99f;
+  --text-faint: #8a6f66;
+  --accent: #E3152B;
+  --accent-gold: #F5A623;
+  --accent-gold-soft: rgba(245, 166, 35, 0.9);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Barlow', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.55;
+  min-height: 100vh;
+}
+
+h1, h2, h3, .display {
+  font-family: 'Barlow', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.font-mono { font-family: 'Barlow', sans-serif; }
+
+/* ---------- Navbar ---------- */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: linear-gradient(180deg, rgba(20, 17, 15, 0.97), rgba(14, 12, 11, 0.95));
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-strong);
+  box-shadow: 0 1px 12px rgba(0, 0, 0, 0.5);
+}
+
+.navbar-inner {
+  position: relative;
+  max-width: 80rem;
+  margin: 0 auto;
+  height: 4.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 0 3rem;
+}
+
+/* ---------- Logo ---------- */
+.logo {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-decoration: none;
+}
+
+.logo-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+  color: #fff;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.logo-title em {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-style: normal;
+  font-weight: 900;
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+  color: #fff;
+  text-transform: uppercase;
+  margin-left: 0.4rem;
+}
+.logo::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 2px;
+  margin-top: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-gold));
+}
+
+/* ---------- Navegación ---------- */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.nav-link {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Barlow', sans-serif;
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  padding: 0.5rem 0.9rem;
+  transition: color 0.15s;
+}
+.nav-link:hover { color: #fff; }
+.nav-link .ico-caret { width: 0.7rem; height: 0.7rem; margin-left: 0.2rem; }
+.nav-ayuda {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.7rem;
+}
+.nav-ayuda .ico { width: 1.15rem; height: 1.15rem; }
+.nav-ayuda[aria-current="page"]::after { left: 0.55rem; right: 0.55rem; }
+
+/* Indicador de página activa */
+.nav-link[aria-current="page"] {
+  color: #fff;
+  font-weight: 700;
+}
+.nav-link[aria-current="page"]::after {
+  content: '';
+  position: absolute;
+  left: 0.9rem;
+  right: 0.9rem;
+  bottom: 0;
+  height: 2px;
+  background: var(--accent);
+}
+
+/* ---------- Dropdown ---------- */
+.dropdown { position: relative; }
+
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  min-width: 13rem;
+  background: var(--panel);
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.6);
+  display: none;
+  z-index: 60;
+  padding: 0.4rem 0;
+  max-height: min(70vh, 28rem);
+  overflow-y: auto;
+}
+.dropdown:hover .dropdown-menu { display: block; }
+
+.dropdown-item {
+  display: block;
+  padding: 0.55rem 1.1rem;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-left: 2px solid transparent;
+  transition: all 0.12s;
+}
+.dropdown-item:hover { background: var(--border); border-left-color: var(--accent); color: #fff; }
+
+/* ---------- Main ---------- */
+.main-container {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 3rem 3rem;
+}
+
+/* ---------- Botón hamburguesa (solo móvil) ---------- */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.5rem;
+  background: none;
+  border: 1px solid var(--border-strong);
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+.nav-toggle-bar {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--text);
+  transition: transform 0.2s, opacity 0.2s;
+}
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(2) { opacity: 0; }
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+@media (max-width: 640px) {
+  .navbar-inner { height: auto; flex-wrap: wrap; padding: 0.75rem 1.5rem; }
+
+  .nav-toggle { display: flex; margin-left: auto; }
+
+  /* Logo más compacto en móvil */
+  .logo-title, .logo-title em { font-size: 1.25rem; }
+
+  /* Menú desplegable superpuesto (overlay): no empuja el contenido */
+  .nav-links {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 18px 30px rgba(0, 0, 0, 0.6);
+    padding: 0.5rem 1.5rem 1rem;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.18s, transform 0.18s, visibility 0.18s;
+  }
+  .nav-links.open {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .nav-link { display: block; padding: 0.75rem 0.5rem; }
+  .nav-link[aria-current="page"]::after { left: 0.5rem; right: 0.5rem; }
+
+  /* El dropdown de ediciones se muestra siempre dentro del menú móvil */
+  .dropdown { width: 100%; }
+  .dropdown-menu {
+    position: static;
+    display: block;
+    min-width: 0;
+    box-shadow: none;
+    border: none;
+    border-left: 2px solid var(--border-strong);
+    margin: 0.25rem 0 0.25rem 0.5rem;
+    padding-left: 0.5rem;
+  }
+
+  /* Más aprovechamiento del ancho en pantallas estrechas */
+  .main-container { padding: 1.75rem 1.25rem; }
+}
+
+/* Pantallas muy estrechas: se oculta la palabra "Analytics" del logo */
+@media (max-width: 380px) {
+  .logo-title em { display: none; }
+  .logo-title { margin-right: 0; }
+}

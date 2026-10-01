@@ -1,0 +1,109 @@
+<div id="etapa-content" class="etapa-content">
+    <div class="etapa-header">
+        <div class="etapa-nav">
+            {% if prev_etapa %}
+            <a class="nav-btn"
+               href="{% url 'etapa_detalle' etapa.edicion.year prev_etapa.numero %}"
+               hx-get="{% url 'etapa_detalle' etapa.edicion.year prev_etapa.numero %}"
+               hx-target="#etapa-content" hx-swap="outerHTML" hx-push-url="true"
+               hx-indicator="#etapa-loading"
+               aria-label="Etapa anterior" title="{{ prev_etapa.nombre }}"><svg class="ico"><use href="#ix-chevron-l"/></svg></a>
+            {% else %}
+            <span class="nav-btn disabled"><svg class="ico"><use href="#ix-chevron-l"/></svg></span>
+            {% endif %}
+            <div class="etapa-titles">
+                <h1 class="etapa-title">{{ etapa.nombre }}</h1>
+                <p class="etapa-subtitle">{{ etapa.edicion.nombre }}</p>
+            </div>
+            <div class="etapa-side">
+                {% if etapa.localidad_inicio or etapa.localidad_fin or etapa.fecha %}
+                <p class="etapa-factual">
+                    {% if etapa.fecha %}<span>{{ etapa.fecha|date:"d/m/Y" }}</span>{% if etapa.localidad_inicio or etapa.localidad_fin %}<br>{% endif %}{% endif %}
+                    {% if etapa.localidad_inicio or etapa.localidad_fin %}<span class="etapa-factual-route">{{ etapa.localidad_inicio }}{% if etapa.localidad_fin %} → {{ etapa.localidad_fin }}{% endif %}</span>{% endif %}
+                </p>
+                {% endif %}
+            </div>
+            {% if next_etapa %}
+            <a class="nav-btn"
+               href="{% url 'etapa_detalle' etapa.edicion.year next_etapa.numero %}"
+               hx-get="{% url 'etapa_detalle' etapa.edicion.year next_etapa.numero %}"
+               hx-target="#etapa-content" hx-swap="outerHTML" hx-push-url="true"
+               hx-indicator="#etapa-loading"
+               aria-label="Etapa siguiente" title="{{ next_etapa.nombre }}"><svg class="ico"><use href="#ix-chevron-r"/></svg></a>
+            {% else %}
+            <span class="nav-btn disabled"><svg class="ico"><use href="#ix-chevron-r"/></svg></span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="etapa-loading" id="etapa-loading">Cargando etapa…</div>
+
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <p class="kpi-label"><svg class="ico kpi-ico" aria-hidden="true"><use href="#ix-flag"/></svg> Distancia</p>
+            <p class="kpi-value">{{ etapa.distancia|floatformat:1 }} <span class="unit">km</span></p>
+        </div>
+        <div class="kpi-card">
+            <p class="kpi-label"><svg class="ico kpi-ico" aria-hidden="true"><use href="#ix-mountain"/></svg> Desnivel +</p>
+            <p class="kpi-value">{{ etapa.desnivel|floatformat:0 }} <span class="unit">m</span></p>
+        </div>
+        <div class="kpi-card">
+            <p class="kpi-label">{% include 'analytics/_tipo_icono.html' with tipo=etapa.tipo %} Tipo</p>
+            <p class="kpi-value type">{{ etapa.tipo }}</p>
+        </div>
+    </div>
+
+    {% if resultados %}
+    <div class="resultado-grid">
+        {% for r in resultados|slice:":3" %}
+        <div class="resultado-card {% if forloop.first %}resultado-oro{% endif %}">
+            <p class="resultado-pos">{% if forloop.first %}Ganador{% else %}{{ r.position }}ª posición{% endif %}</p>
+            <p class="resultado-rider">{{ r.rider }}</p>
+            {% if r.team %}<p class="resultado-team">{{ r.team }}</p>{% endif %}
+            {% if r.time or r.gap %}<p class="resultado-gap">{% if forloop.first %}{{ r.time }}{% else %}{{ r.gap }}{% endif %}</p>{% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% elif etapa.ganador %}
+    <div class="terrain-grid" style="margin-bottom:3rem;justify-content:center">
+        <div class="terrain-card">
+            <p class="terrain-label">Ganador</p>
+            <p class="terrain-value">{{ etapa.ganador }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="terrain-grid">
+        <div class="terrain-card">
+            <p class="terrain-label">Altitud máxima</p>
+            <p class="terrain-value">{{ altitud_max|floatformat:0 }} <span class="unit">m</span></p>
+        </div>
+        <div class="terrain-card">
+            <p class="terrain-label">Altitud mínima</p>
+            <p class="terrain-value">{{ altitud_min|floatformat:0 }} <span class="unit">m</span></p>
+        </div>
+        <div class="terrain-card">
+            <p class="terrain-label">Pendiente máx</p>
+            <p class="terrain-value">{{ pendiente_max|floatformat:1 }} <span class="unit">%</span></p>
+        </div>
+        <div class="terrain-card">
+            <p class="terrain-label">Pendiente media puertos</p>
+            <p class="terrain-value">{{ pendiente_media|floatformat:1 }} <span class="unit">%</span></p>
+        </div>
+        <div class="terrain-card">
+            <p class="terrain-label">Puertos</p>
+            <p class="terrain-value">{{ n_puertos }}</p>
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <div class="panel">
+            <h2 class="panel-title">Mapa del Track</h2>
+            <div class="map-frame">{{ map_html|safe }}</div>
+        </div>
+        <div class="panel">
+            <h2 class="panel-title">Perfil Altimétrico</h2>
+            <div class="chart-frame">{{ plot_html|safe }}</div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,11 @@
+{% extends 'analytics/base.html' %}
+{% load static %}
+{% block title %}La Vuelta {{ etapa.edicion.year }} · Etapa {{ etapa.numero }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'analytics/css/etapa_detalle.css' %}">
+{% endblock %}
+
+{% block content %}
+{% include 'analytics/etapa_detalle_content.html' %}
+{% endblock %}

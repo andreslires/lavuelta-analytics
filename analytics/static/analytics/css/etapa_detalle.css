@@ -1,0 +1,217 @@
+/* etapa_detalle.css — Detalle de una etapa (KPIs, mapa y perfil) */
+.etapa-header {
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1.75rem;
+}
+.etapa-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.etapa-titles { flex: 1; min-width: 0; }
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid var(--border-strong);
+  background: var(--panel);
+  color: var(--accent-red, #E3152B);
+  font-size: 1.5rem;
+  line-height: 1;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  flex: none;
+}
+.nav-btn:hover:not(.disabled) {
+  background: var(--accent-red, #E3152B);
+  border-color: var(--accent-red, #E3152B);
+  color: #fff;
+}
+.nav-btn.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.nav-btn .ico { width: 1.25rem; height: 1.25rem; }
+.etapa-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  color: #fff;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.etapa-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  max-width: 24rem;
+}
+.etapa-subtitle {
+  font-size: 1rem;
+  color: var(--accent-gold);
+  line-height: 1.3;
+  margin-top: 0.35rem;
+  text-align: left;
+}
+
+/* Datos factuales importados (fecha, localidades, ganador) */
+.etapa-factual {
+  margin-top: 0.4rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  letter-spacing: 0.02em;
+  line-height: 1.6;
+}
+.etapa-factual .etapa-factual-route { color: var(--text); }
+
+/* Resultado de la etapa (podio, datos factuales) */
+.resultado-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+.resultado-card {
+  background: var(--panel-soft);
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--border);
+  text-align: center;
+}
+.resultado-card.resultado-oro { border-top: 2px solid var(--accent-gold); }
+.resultado-pos { font-family: 'Barlow', sans-serif; font-size: 0.7rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.12em; }
+.resultado-rider { font-size: 1.1rem; color: #fff; font-weight: 700; margin-top: 0.4rem; line-height: 1.2; }
+.resultado-team { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.25rem; }
+.resultado-gap { font-size: 0.75rem; font-family: 'Barlow', sans-serif; color: var(--accent-gold); margin-top: 0.25rem; }
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.kpi-card {
+  background: var(--panel-soft);
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+}
+
+.kpi-label {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
+.kpi-label .ico {
+  width: 0.85rem;
+  height: 0.85rem;
+  margin-right: 0.35rem;
+  color: var(--accent-gold);
+  vertical-align: -0.15em;
+}
+
+.kpi-value { font-size: 2.25rem; color: #fff; font-family: 'Barlow', sans-serif; margin-top: 0.5rem; }
+.kpi-value .unit { font-size: 0.875rem; color: var(--text-dim); }
+.kpi-value.type { font-size: 1.5rem; font-weight: 700; }
+
+.terrain-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  background: var(--panel-soft);
+  padding: 1.5rem 1.75rem;
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--accent-gold);
+  margin-bottom: 3rem;
+}
+
+.terrain-card {
+  background: var(--panel);
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+}
+
+.terrain-label {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.65rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.terrain-value {
+  font-size: 1.25rem;
+  color: #fff;
+  font-family: 'Barlow', sans-serif;
+  line-height: 1.1;
+}
+.terrain-value .unit { font-size: 0.7rem; color: var(--text-faint); font-family: 'Barlow', sans-serif; letter-spacing: 0.05em; }
+
+.panel {
+  background: var(--panel-soft);
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+}
+
+.panel-title {
+  font-size: 1.125rem;
+  color: #fff;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+
+.map-frame, .chart-frame {
+  overflow: hidden;
+}
+
+/* Folium */
+.folium-map { height: 70vh !important; width: 100% !important; }
+
+/* Indicador de carga HTMX (navegación entre etapas) */
+.etapa-loading {
+  display: none;
+  text-align: center;
+  padding: 0.75rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+  margin-bottom: 1.5rem;
+}
+.etapa-loading.htmx-request { display: block; }
+.etapa-loading::before {
+  content: '';
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.8rem;
+  margin-right: 0.5rem;
+  border: 2px solid var(--accent-gold);
+  border-top-color: transparent;
+  border-radius: 50%;
+  vertical-align: middle;
+  animation: etapa-spin 0.7s linear infinite;
+}
+@keyframes etapa-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 1024px) {
+  .kpi-grid { grid-template-columns: 1fr; }
+  .terrain-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .terrain-grid { grid-template-columns: 1fr; }
+  .etapa-nav { flex-wrap: wrap; }
+  .etapa-side { order: 10; flex: 1 1 100%; align-items: flex-start; text-align: left; }
+  .resultado-grid { grid-template-columns: 1fr; }
+}

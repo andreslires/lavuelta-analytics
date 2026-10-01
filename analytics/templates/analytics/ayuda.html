@@ -1,0 +1,145 @@
+{% extends 'analytics/base.html' %}
+{% load static %}
+{% block title %}Ayuda{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'analytics/css/ayuda.css' %}">
+{% endblock %}
+
+{% block content %}
+<header class="ayuda-header">
+    <p class="ayuda-eyebrow">Documentación</p>
+    <h1 class="ayuda-title">Guía de uso</h1>
+    <p class="ayuda-subtitle">
+        La Vuelta Analytics reúne el histórico completo de la Vuelta (2011–2026):
+        ediciones, etapas, recorridos y comparativas. Esta guía explica qué hace
+        cada sección y cómo se usa.
+    </p>
+</header>
+
+<nav class="ayuda-index" aria-label="Índice de la guía">
+    <a class="ayuda-index-card" href="#dashboard"><span class="ayuda-index-num">01</span> Dashboard</a>
+    <a class="ayuda-index-card" href="#mapa"><span class="ayuda-index-num">02</span> Mapa</a>
+    <a class="ayuda-index-card" href="#ediciones"><span class="ayuda-index-num">03</span> Ediciones</a>
+    <a class="ayuda-index-card" href="#comparar"><span class="ayuda-index-num">04</span> Comparar</a>
+    <a class="ayuda-index-card" href="#etapa"><span class="ayuda-index-num">05</span> Etapa</a>
+</nav>
+
+<section class="ayuda-section" id="dashboard">
+    <h2 class="section-title"><span class="section-index">01</span> Dashboard</h2>
+    <p class="ayuda-lead">La página de inicio: un resumen de todo el histórico.</p>
+    <dl class="ayuda-defs">
+        <div class="ayuda-def">
+            <dt>Cifras generales</dt>
+            <dd>Número de ediciones y etapas, distancia y desnivel acumulados de todo el histórico.</dd>
+        </div>
+        <div class="ayuda-def">
+            <dt>Mapa general</dt>
+            <dd>Vista previa del mapa. Púlsala para abrir el mapa interactivo completo.</dd>
+        </div>
+        <div class="ayuda-def">
+            <dt>Datos geográficos</dt>
+            <dd>Comunidades visitadas, la más recorrida, etapas con tramo fuera de España y su distribución.</dd>
+        </div>
+        <div class="ayuda-def">
+            <dt>Comparativa de ediciones</dt>
+            <dd>Marca o desmarca ediciones para filtrar las gráficas. La selección queda en la URL, así que es compartible.</dd>
+        </div>
+        <div class="ayuda-def">
+            <dt>Detalle de ediciones</dt>
+            <dd>Una tarjeta por edición; al pulsarla entras en su página.</dd>
+        </div>
+    </dl>
+</section>
+
+<section class="ayuda-section" id="mapa">
+    <h2 class="section-title"><span class="section-index">02</span> Mapa</h2>
+    <p class="ayuda-lead">Dos pestañas, cada una con su propia dirección.</p>
+    <dl class="ayuda-defs">
+        <div class="ayuda-def">
+            <dt>Etapas <code>?tab=etapas</code></dt>
+            <dd>Mapa con todas las etapas de todas las ediciones. Haz clic en una para ver su detalle y su perfil.</dd>
+        </div>
+        <div class="ayuda-def">
+            <dt>Provincias <code>?tab=provincias</code></dt>
+            <dd>Provincias atravesadas por la Vuelta. Haz clic en una para ver la última etapa que pasó por ella.</dd>
+        </div>
+    </dl>
+</section>
+
+<section class="ayuda-section" id="ediciones">
+    <h2 class="section-title"><span class="section-index">03</span> Ediciones</h2>
+    <p class="ayuda-lead">
+        Se llega desde el desplegable <em>Ediciones</em> del menú superior o desde las
+        tarjetas del dashboard. Una edición muestra:
+    </p>
+    <dl class="ayuda-defs">
+        <div class="ayuda-def">
+            <dt>Resultados</dt>
+            <dd>Clasificación general final y maillots, cuando hay datos.</dd>
+        </div>
+        <div class="ayuda-def">
+            <dt>Resumen</dt>
+            <dd>Etapas, distancia y desnivel totales, dureza media y etapa más dura, larga y corta.</dd>
+        </div>
+        <div class="ayuda-def">
+            <dt>Gráficas</dt>
+            <dd>Desnivel por etapa, distancia por etapa y tipología de etapas.</dd>
+        </div>
+        <div class="ayuda-def">
+            <dt>Etapas</dt>
+            <dd>Tarjeta por etapa con su perfil; al pulsar, se abre el detalle de la etapa.</dd>
+        </div>
+    </dl>
+</section>
+
+<section class="ayuda-section" id="comparar">
+    <h2 class="section-title"><span class="section-index">04</span> Comparar</h2>
+    <p class="ayuda-lead">Tres pestañas, cada una con su propia dirección.</p>
+
+    <div class="ayuda-sub">
+        <h3 class="ayuda-sub-title">Ediciones <code>?tab=ediciones</code></h3>
+        <p>Elige dos ediciones y pulsa <strong>Comparar</strong>. Verás, cara a cara, los KPIs de ambas (etapas, distancia, desnivel, dureza y medias), la etapa más dura y más larga de cada una, las gráficas superpuestas de desnivel y distancia, la distribución del desnivel, la tipología de etapas y un mapa con el recorrido de las dos. Nada se muestra hasta que elijas las dos ediciones.</p>
+    </div>
+
+    <div class="ayuda-sub">
+        <h3 class="ayuda-sub-title">Perfiles similares <code>?tab=perfiles</code></h3>
+        <p>Elige una etapa y pulsa <strong>Buscar similares</strong>: se muestra la lista de etapas más parecidas. Cada fila es un desplegable que, al abrirlo, carga la comparación cara a cara (perfiles A y B, porcentaje de similitud y tabla de métricas); puedes abrir y cerrar varias, y se mantienen al bajar. Con el botón <strong>+ Añadir etapa 2</strong> eliges una segunda etapa manualmente: el selector aparece debajo, con una pequeña <strong>×</strong> a su derecha para quitarlo, y pulsando <strong>Comparar</strong> ves ambos perfiles enfrentados.</p>
+    </div>
+
+    <div class="ayuda-sub">
+        <h3 class="ayuda-sub-title">Zonas comunes <code>?tab=zonas</code></h3>
+        <p>Elige una etapa de referencia y se buscan, en cualquier edición, las etapas que comparten un tramo real de carretera con ella (al menos ~3 km continuos, con 50 m de margen). Cada fila es un desplegable: al abrirlo se carga el mapa con el recorrido de ambas y el tramo común resaltado, y puedes abrir varios a la vez.</p>
+    </div>
+</section>
+
+<section class="ayuda-section" id="etapa">
+    <h2 class="section-title"><span class="section-index">05</span> Etapa</h2>
+    <p class="ayuda-lead">
+        Se llega desde el mapa o desde el listado de una edición. La cabecera resume
+        edición, fecha, recorrido (de → a) y dureza; debajo, el detalle completo:
+    </p>
+    <dl class="ayuda-defs">
+        <div class="ayuda-def">
+            <dt>Mapa y perfil</dt>
+            <dd>Mapa con el recorrido real de la etapa y su perfil altimétrico interactivo.</dd>
+        </div>
+        <div class="ayuda-def">
+            <dt>Datos clave</dt>
+            <dd>Distancia, desnivel positivo y tipo de etapa, con iconos propios.</dd>
+        </div>
+        <div class="ayuda-def">
+            <dt>Terreno</dt>
+            <dd>Altitud máxima y mínima, pendiente máxima, pendiente media de los puertos y número de puertos.</dd>
+        </div>
+        <div class="ayuda-def">
+            <dt>Resultado</dt>
+            <dd>Ganador y podio de la etapa cuando hay datos.</dd>
+        </div>
+        <div class="ayuda-def">
+            <dt>Navegación</dt>
+            <dd>Flechas para saltar a la etapa anterior o a la siguiente del mismo año.</dd>
+        </div>
+    </dl>
+</section>
+{% endblock %}

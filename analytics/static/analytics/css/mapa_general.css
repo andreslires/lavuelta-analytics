@@ -1,0 +1,63 @@
+/* mapa_general.css — Mapa comparativo de todas las ediciones */
+.map-header { margin-bottom: 2rem; }
+.map-title { font-family: 'Barlow Condensed', sans-serif; font-size: 2.25rem; color: #fff; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; }
+.map-subtitle { color: var(--text-dim); margin-top: 0.5rem; }
+
+/* ---------- Tabs ---------- */
+.map-tabs {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--border-strong);
+  margin-bottom: 1.5rem;
+}
+.map-tab {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--text-dim);
+  text-decoration: none;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.9rem;
+  padding: 0.9rem 1.5rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.map-tab:hover { color: #fff; }
+.map-tab.is-active { color: #fff; border-bottom-color: var(--accent); }
+
+.map-panel { display: none; }
+.map-panel.is-active { display: block; }
+
+.map-hint {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+
+.map-frame {
+  background: #000;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  height: 85vh;
+}
+.map-frame--compact {
+  height: 130vh;
+}
+
+/* Folium */
+.folium-map,
+.folium-map .leaflet-container { height: 100% !important; width: 100% !important; }
+
+/* ---------- Responsive (solo móvil; el portátil no se modifica) ---------- */
+@media (max-width: 640px) {
+  .map-frame { height: 68vh; }
+  .map-frame--compact { height: 72vh; min-height: 26rem; }
+  .map-tab { padding: 0.75rem 1rem; font-size: 0.85rem; }
+  .map-hint { line-height: 1.4; }
+}

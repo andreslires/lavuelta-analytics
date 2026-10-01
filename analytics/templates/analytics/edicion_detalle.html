@@ -1,0 +1,141 @@
+{% extends 'analytics/base.html' %}
+{% load static %}
+{% block title %}La Vuelta {{ edicion.year }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'analytics/css/edicion_detalle.css' %}">
+{% endblock %}
+
+{% block content %}
+<header class="edicion-header">
+    <h1 class="edicion-title">{{ edicion.nombre }}</h1>
+    {% if edicion.fecha_inicio or edicion.fecha_fin or edicion.ganador %}
+    <p class="edicion-factual">
+        {% if edicion.fecha_inicio %}
+        <span>{{ edicion.fecha_inicio|date:"d/m/Y" }} → {{ edicion.fecha_fin|date:"d/m/Y" }}</span><br>
+        {% endif %}
+        {% if edicion.ganador %}Ganador: <span class="edicion-factual-strong">{{ edicion.ganador }}</span>{% endif %}
+    </p>
+    {% endif %}
+</header>
+
+{% if gc_top or maillots_list %}
+<section class="ed-resultados">
+    {% if gc_top %}
+    <div class="ed-resultado-panel">
+        <p class="ed-stat-item-label">Clasificación general final</p>
+        <ul class="ed-resultado-list">
+            {% for r in gc_top %}
+            <li>
+                <span class="ed-resultado-pos">{{ r.position }}º</span>
+                <span class="ed-resultado-line">
+                    <span class="ed-resultado-rider">{{ r.rider }}</span>
+                    {% if r.team %}<span class="ed-resultado-team">{{ r.team }}</span>{% endif %}
+                </span>
+                {% if r.time or r.gap %}<span class="ed-resultado-gap">{% if r.time %}{{ r.time }}{% else %}{{ r.gap }}{% endif %}</span>{% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% if maillots_list %}
+    <div class="ed-resultado-panel">
+        <p class="ed-stat-item-label">Maillots</p>
+        <ul class="ed-resultado-list">
+            {% for m in maillots_list %}
+            <li>
+                <span class="ed-resultado-pos">{{ m.tipo }}</span>
+                <span class="ed-resultado-line">
+                    <span class="ed-resultado-rider">{{ m.rider }}</span>
+                    {% if m.team %}<span class="ed-resultado-team">{{ m.team }}</span>{% endif %}
+                </span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</section>
+{% endif %}
+
+<section class="ed-stats-section">
+    <h2 class="ed-section-title"><span class="ed-section-index">01</span> Resumen</h2>
+    <div class="ed-stats-grid">
+        <div class="ed-stat-card">
+            <p class="ed-stat-label">Etapas</p>
+            <p class="ed-stat-value">{{ etapas|length }}</p>
+        </div>
+        <div class="ed-stat-card">
+            <p class="ed-stat-label">Distancia Total</p>
+            <p class="ed-stat-value">{{ total_km|floatformat:0 }} <span class="unit">KM</span></p>
+        </div>
+        <div class="ed-stat-card">
+            <p class="ed-stat-label">Desnivel Total</p>
+            <p class="ed-stat-value">{{ total_des|floatformat:0 }} <span class="unit">M+</span></p>
+        </div>
+        <div class="ed-stat-card">
+            <p class="ed-stat-label">Dureza Media</p>
+            <p class="ed-stat-value">{{ dureza|floatformat:1 }} <span class="unit">M/KM</span></p>
+        </div>
+    </div>
+
+    <div class="ed-stats-secondary">
+        <div>
+            <p class="ed-stat-item-label">Distancia Media/Etapa</p>
+            <p class="ed-stat-item-value">{{ avg_km|floatformat:1 }} <span>km</span></p>
+        </div>
+        <div>
+            <p class="ed-stat-item-label">Desnivel Medio/Etapa</p>
+            <p class="ed-stat-item-value">{{ avg_des|floatformat:0 }} <span>m</span></p>
+        </div>
+        <div>
+            <p class="ed-stat-item-label">Etapa más dura</p>
+            <p class="ed-stat-item-strong">{{ dura.nombre }}</p>
+            <p class="ed-stat-item-value accent">{{ dura.desnivel|floatformat:0 }} m+</p>
+        </div>
+        <div>
+            <p class="ed-stat-item-label">Etapa más larga</p>
+            <p class="ed-stat-item-strong">{{ larga.nombre }}</p>
+            <p class="ed-stat-item-value accent">{{ larga.distancia|floatformat:0 }} km</p>
+        </div>
+        <div>
+            <p class="ed-stat-item-label">Etapa más corta</p>
+            <p class="ed-stat-item-strong">{{ corta.nombre }}</p>
+            <p class="ed-stat-item-value accent">{{ corta.distancia|floatformat:0 }} km</p>
+        </div>
+    </div>
+
+    <div class="ed-charts">
+        <div class="ed-chart">
+            <p class="ed-stat-item-label">Desnivel por etapa</p>
+            <div class="chart-body">{{ desnivel_chart_html|safe }}</div>
+        </div>
+        <div class="ed-chart">
+            <p class="ed-stat-item-label">Distancia por etapa</p>
+            <div class="chart-body">{{ distancia_chart_html|safe }}</div>
+        </div>
+        <div class="ed-chart ed-chart-wide">
+            <p class="ed-stat-item-label">Tipos de etapa</p>
+            <div class="chart-body">{{ tipos_chart_html|safe }}</div>
+        </div>
+    </div>
+</section>
+
+<h2 class="ed-section-title"><span class="ed-section-index">02</span> Etapas</h2>
+<div class="stages-grid">
+    {% for edata in etapas_data %}
+    <div class="stage-card">
+        <h3 class="stage-number">Etapa {{ edata.etapa.numero }}</h3>
+        {% include 'analytics/_tipo_icono.html' with tipo=edata.etapa.tipo %}
+        <p class="stage-name" title="{{ edata.etapa.localidad_inicio }}{% if edata.etapa.localidad_fin %} → {{ edata.etapa.localidad_fin }}{% endif %}">{% if edata.etapa.localidad_inicio or edata.etapa.localidad_fin %}{{ edata.etapa.localidad_inicio }}{% if edata.etapa.localidad_fin %} → {{ edata.etapa.localidad_fin }}{% endif %}{% else %}{{ edata.etapa.nombre }}{% endif %}</p>
+        <div class="stage-meta">
+            <span>{{ edata.etapa.distancia|floatformat:0 }} KM</span>
+            <span>{{ edata.etapa.desnivel|floatformat:0 }} M+</span>
+        </div>
+        {% if edata.sparkline %}
+        <div class="stage-card__profile" aria-hidden="true">{{ edata.sparkline|safe }}</div>
+        {% endif %}
+        <a href="{% url 'etapa_detalle' edicion.year edata.etapa.numero %}" class="stage-link">Ver Detalles</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

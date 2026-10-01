@@ -1,0 +1,76 @@
+{% extends 'analytics/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+.error-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+.error-code {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(6rem, 15vw, 12rem);
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+.error-msg {
+  font-size: 1.25rem;
+  color: var(--text-dim);
+  margin-bottom: 2.5rem;
+  max-width: 30rem;
+}
+.error-link {
+  display: inline-block;
+  border: 1px solid var(--border-strong);
+  padding: 0.6rem 2rem;
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.error-link:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+.error-links { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin-bottom: 3rem; }
+.error-recent { font-size: 0.85rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700; margin-bottom: 1rem; }
+.error-recent-list { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+.error-recent-link {
+  border: 1px solid var(--border);
+  padding: 0.45rem 1.25rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.error-recent-link:hover { color: var(--accent); border-color: var(--border-strong); }
+</style>
+<div class="error-page">
+    <p class="error-code">404</p>
+    <p class="error-msg">La etapa que buscas no existe o ha sido redirigida.</p>
+    <nav class="error-links">
+        <a href="/" class="error-link">Dashboard</a>
+        <a href="{% url 'mapa_general' %}" class="error-link">Mapa</a>
+        <a href="{% url 'comparar' %}" class="error-link">Comparar</a>
+        <a href="{% url 'ayuda' %}" class="error-link">Ayuda</a>
+    </nav>
+    {% if all_ediciones|slice:":3" %}
+    <p class="error-recent">O vuelve a una edición reciente</p>
+    <div class="error-recent-list">
+        {% for ed in all_ediciones|slice:":3" %}
+        <a href="{% url 'edicion_detalle' ed.year %}" class="error-recent-link">{{ ed.year|stringformat:"s" }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

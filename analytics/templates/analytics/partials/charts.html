@@ -1,0 +1,18 @@
+<section class="charts-section">
+    <div class="chart-card">
+        <h3 class="chart-label">Desnivel positivo total por edición (m)</h3>
+        <div class="chart-body">{{ plot_html|safe }}</div>
+    </div>
+    <div class="chart-card">
+        <h3 class="chart-label">Distancia total por edición (km)</h3>
+        <div class="chart-body">{{ plot_dist_html|safe }}</div>
+    </div>
+    <div class="chart-card">
+        <h3 class="chart-label">Km vs desnivel por etapa (cada punto es una etapa)</h3>
+        <div class="chart-body">{{ plot_scat_html|safe }}</div>
+    </div>
+    <div class="chart-card">
+        <h3 class="chart-label">Distribución del desnivel por etapa y edición</h3>
+        <div class="chart-body">{{ plot_box_html|safe }}</div>
+    </div>
+</section>
