@@ -1,4 +1,4 @@
-/* edicion_detalle.css — Listado de etapas de una edicion */
+/* edicion_detalle.css - Listado de etapas de una edicion */
 .edicion-header { margin-bottom: 3rem; }
 .edicion-title { font-family: 'Barlow Condensed', sans-serif; font-size: 3.75rem; color: #fff; font-weight: 900; text-transform: uppercase; }
 .edicion-year { font-size: 1.5rem; color: var(--accent-gold); font-family: 'Barlow', sans-serif; margin-top: 0.5rem; }
@@ -137,14 +137,23 @@
 .ed-chart-wide { grid-column: 1 / -1; }
 .ed-chart-wide .chart-body { height: 12rem; }
 
-.stages-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+.stages-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
+  gap: 1.25rem;
+  width: 100%;
+}
 
 .stage-card {
   position: relative;
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--border);
-  padding: 1.5rem 1.5rem 1.75rem;
+  padding: 1.5rem;
   background: var(--panel-soft);
   transition: border-color 0.3s;
+  width: 100%;
+  box-sizing: border-box;
 }
 .stage-card:hover { border-color: var(--accent); }
 
@@ -185,6 +194,7 @@
   padding: 0 0.25rem;
   overflow: hidden;
   opacity: 0.9;
+  flex-grow: 1; /* Esto ayuda a que el perfil ocupe el espacio disponible */
 }
 .stage-card__profile svg {
   display: block;
@@ -206,6 +216,7 @@
   color: var(--text);
   text-decoration: none;
   transition: all 0.15s;
+  margin-top: auto; /* Pushes the button to the bottom */
 }
 .stage-link:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
 

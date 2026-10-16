@@ -57,18 +57,18 @@
     <div class="resultado-grid">
         {% for r in resultados|slice:":3" %}
         <div class="resultado-card {% if forloop.first %}resultado-oro{% endif %}">
-            <p class="resultado-pos">{% if forloop.first %}Ganador{% else %}{{ r.position }}ª posición{% endif %}</p>
-            <p class="resultado-rider">{{ r.rider }}</p>
-            {% if r.team %}<p class="resultado-team">{{ r.team }}</p>{% endif %}
-            {% if r.time or r.gap %}<p class="resultado-gap">{% if forloop.first %}{{ r.time }}{% else %}{{ r.gap }}{% endif %}</p>{% endif %}
+            <p class="resultado-pos">{% if forloop.first %}Ganador{% else %}{{ r.posicion }}ª posición{% endif %}</p>
+            <p class="resultado-rider">{{ r.ciclista.nombre }}</p>
+            {% if r.equipo %}<p class="resultado-team">{{ r.equipo.nombre }}</p>{% endif %}
+            {% if r.tiempo or r.diferencia %}<p class="resultado-gap">{% if forloop.first %}{{ r.tiempo }}{% else %}{{ r.diferencia }}{% endif %}</p>{% endif %}
         </div>
         {% endfor %}
     </div>
     {% elif etapa.ganador %}
-    <div class="terrain-grid" style="margin-bottom:3rem;justify-content:center">
-        <div class="terrain-card">
-            <p class="terrain-label">Ganador</p>
-            <p class="terrain-value">{{ etapa.ganador }}</p>
+    <div class="resultado-grid" style="justify-content:center; margin-bottom: 3rem;">
+        <div class="resultado-card resultado-oro">
+            <p class="resultado-pos">Ganador</p>
+            <p class="resultado-rider">{{ etapa.ganador }}</p>
         </div>
     </div>
     {% endif %}

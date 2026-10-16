@@ -77,6 +77,7 @@ def _to_html(fig):
 def build_charts(ediciones):
     """Construye las 4 gráficas comparativas de varias ediciones."""
     years = [e.year for e in ediciones]
+    all_years = _anos_ordenados()
     cache_key = 'charts_' + '_'.join(str(y) for y in years)
     cached = cache.get(cache_key)
     if cached is not None:
@@ -87,11 +88,13 @@ def build_charts(ediciones):
     # 1. Desnivel total por edición
     fig = go.Figure(data=[go.Bar(x=years, y=[e.total_d or 0 for e in ediciones], marker_color=colores)])
     chart_layout(fig)
+    fig.update_layout(xaxis=dict(tickvals=all_years, ticktext=[str(y) for y in all_years]))
     plot_html = _to_html(fig)
 
     # 2. Distancia total por edición
     fig_dist = go.Figure(data=[go.Bar(x=years, y=[e.total_km or 0 for e in ediciones], marker_color=colores)])
     chart_layout(fig_dist)
+    fig_dist.update_layout(xaxis=dict(tickvals=all_years, ticktext=[str(y) for y in all_years]))
     plot_dist_html = _to_html(fig_dist)
 
     # 3. Scatter comparativo: cada etapa (km vs desnivel) coloreada por edición

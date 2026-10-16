@@ -116,6 +116,9 @@ STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'analytics/static']
 
+# Carpeta de datos para GPX
+DATA_PATH = env('DATA_PATH', default=BASE_DIR / 'data')
+
 ROOT_URLCONF = 'core.urls'
 
 # Default primary key field type

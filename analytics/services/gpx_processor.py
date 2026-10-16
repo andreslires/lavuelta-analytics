@@ -1,9 +1,12 @@
 import gpxpy
 import pandas as pd
 import numpy as np
+import os
+from django.conf import settings
 from geopy.distance import geodesic
 from shapely.geometry import LineString
-import geopandas as gpd
+from shapely.wkt import loads
+from django.core.cache import cache
 
 
 def clasificar_etapa(distancia, desnivel):
@@ -101,8 +104,12 @@ class GPXProcessor:
         self.gpx = self._load_gpx()
 
     def _load_gpx(self):
-        file_path = self.file_path.replace('\\', '/')
-        with open(file_path, 'rb') as gpx_file:
+        # Usamos os.path.basename para ignorar la ruta completa del sistema
+        # anterior y buscar el archivo siempre en DATA_PATH.
+        nombre_archivo = os.path.basename(self.file_path)
+        ruta_correcta = os.path.join(settings.DATA_PATH, nombre_archivo)
+        
+        with open(ruta_correcta, 'rb') as gpx_file:
             return gpxpy.parse(gpx_file.read().decode('utf-8'))
 
     def process(self):

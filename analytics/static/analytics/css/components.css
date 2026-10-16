@@ -1,4 +1,4 @@
-/* components.css — Estilos compartidos entre vistas (se cargan tras base.css).
+/* components.css - Estilos compartidos entre vistas (se cargan tras base.css).
    La idea: lo que se repite en varias páginas vive aquí una sola vez y cada
    vista solo añade lo específico. Base orientada a escritorio (desktop-first):
    los breakpoints colapsan hacia móvil con @media (max-width).

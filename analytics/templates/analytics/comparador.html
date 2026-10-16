@@ -14,9 +14,17 @@
 <!-- ---------- Tabs ---------- -->
 <div class="comp-tabs" role="tablist">
     <a class="comp-tab {% if tab == 'ediciones' %}is-active{% endif %}" href="{% url 'comparar' %}?tab=ediciones" role="tab">Ediciones</a>
-    <a class="comp-tab {% if tab == 'perfiles' %}is-active{% endif %}" href="{% url 'comparar' %}?tab=perfiles" role="tab">Perfiles similares</a>
-    <a class="comp-tab {% if tab == 'zonas' %}is-active{% endif %}" href="{% url 'comparar' %}?tab=zonas" role="tab">Zonas comunes</a>
+    <a class="comp-tab {% if tab == 'perfiles' %}is-active{% endif %}" href="{% url 'comparar' %}?tab=perfiles" role="tab">Etapas similares</a>
+    <a class="comp-tab {% if tab == 'zonas' %}is-active{% endif %}" href="{% url 'comparar' %}?tab=zonas" role="tab">Recorrido común</a>
 </div>
+
+{% if not tab %}
+<div class="comp-placeholder">
+    <div class="comp-placeholder-index">Comparador La Vuelta</div>
+    <h2 class="comp-placeholder-title">Selecciona un modo</h2>
+    <p class="comp-placeholder-text">Elige comparar las estadísticas de dos ediciones, buscar qué etapas son similares en perfil, terreno o características o analizar qué etapas comaparten recorrido.</p>
+</div>
+{% endif %}
 
 <!-- ================= TAB EDICIONES ================= -->
 <section class="comp-panel {% if tab == 'ediciones' %}is-active{% endif %}" data-panel="ediciones">
@@ -271,7 +279,7 @@
             <label class="comp-pick-label" for="zona_year">Etapa de referencia</label>
             <div class="ac-wrap cascade">
                 <select class="comp-select cal" id="zona_year" aria-label="Año de la etapa">
-                    <option value="">— Edición —</option>
+                    <option value="">- Edición -</option>
                     {% for ed in todas %}
                     <option value="{{ ed.year }}"{% if zona_e and zona_e.edicion.year == ed.year %} selected{% endif %}>{{ ed.year }}</option>
                     {% endfor %}
@@ -280,7 +288,7 @@
                     {% if zona_e %}
                     <option value="{{ zona_e.id }}" selected>{{ zona_e.edicion.year }} · Etapa {{ zona_e.numero }}{% if zona_e.tipo %} · {{ zona_e.tipo }}{% endif %}</option>
                     {% else %}
-                    <option value="">— Elegir etapa —</option>
+                    <option value="">- Elegir etapa -</option>
                     {% endif %}
                 </select>
             </div>
@@ -334,7 +342,7 @@
         stageSel.innerHTML = '';
         var ph = document.createElement('option');
         ph.value = '';
-        ph.textContent = '— Elegir etapa —';
+        ph.textContent = '- Elegir etapa -';
         stageSel.appendChild(ph);
         for (var i = 0; i < ETAPAS.length; i++) {
             if (String(ETAPAS[i].year) !== year) continue;

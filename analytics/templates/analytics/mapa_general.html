@@ -18,6 +18,14 @@
     <a class="map-tab {% if tab == 'provincias' %}is-active{% endif %}" href="{% url 'mapa_general' %}?tab=provincias" role="tab">Provincias</a>
 </div>
 
+{% if not tab %}
+<div class="comp-placeholder">
+    <div class="comp-placeholder-index">Distribución geográfica</div>
+    <h2 class="comp-placeholder-title">Selecciona un mapa</h2>
+    <p class="comp-placeholder-text">Elige entre el mapa de distribución geográfica de todas las etapas o informate acerca de la última etapa que pasó por cada provincia.</p>
+</div>
+{% endif %}
+
 <!-- ================= TAB ETAPAS ================= -->
 <section class="map-panel {% if tab == 'etapas' %}is-active{% endif %}" data-panel="etapas">
     <p class="map-hint">Haz clic en una etapa para ver más información.</p>

@@ -740,6 +740,44 @@ def build_mapa_par_tramos(etapa_ref, otra, geom_comun, color_ref='#E3152B',
     folium.PolyLine(coords_ref, color=color_ref, weight=4, opacity=0.9).add_to(mapa)
     folium.PolyLine(coords_otra, color=color_otra, weight=3.5, opacity=0.8).add_to(mapa)
 
+    # Marcadores para etapa de referencia
+    if coords_ref:
+        folium.Marker(
+            location=(float(coords_ref[0][0]), float(coords_ref[0][1])),
+            icon=folium.DivIcon(
+                html='<div style="background-color: green; color: white; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; border: 1px solid white;"><i class="fa fa-play" style="font-size: 7px;"></i></div>',
+                icon_size=(14, 14), icon_anchor=(7, 7)
+            ),
+            tooltip='Inicio (Ref)'
+        ).add_to(mapa)
+        folium.Marker(
+            location=(float(coords_ref[-1][0]), float(coords_ref[-1][1])),
+            icon=folium.DivIcon(
+                html='<div style="background-color: red; color: white; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; border: 1px solid white;"><i class="fa fa-flag" style="font-size: 7px;"></i></div>',
+                icon_size=(14, 14), icon_anchor=(7, 7)
+            ),
+            tooltip='Meta (Ref)'
+        ).add_to(mapa)
+    
+    # Marcadores para etapa comparada
+    if coords_otra:
+        folium.Marker(
+            location=(float(coords_otra[0][0]), float(coords_otra[0][1])),
+            icon=folium.DivIcon(
+                html='<div style="background-color: green; color: white; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; border: 1px solid white;"><i class="fa fa-play" style="font-size: 7px;"></i></div>',
+                icon_size=(14, 14), icon_anchor=(7, 7)
+            ),
+            tooltip='Inicio (Comparada)'
+        ).add_to(mapa)
+        folium.Marker(
+            location=(float(coords_otra[-1][0]), float(coords_otra[-1][1])),
+            icon=folium.DivIcon(
+                html='<div style="background-color: red; color: white; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; border: 1px solid white;"><i class="fa fa-flag" style="font-size: 7px;"></i></div>',
+                icon_size=(14, 14), icon_anchor=(7, 7)
+            ),
+            tooltip='Meta (Comparada)'
+        ).add_to(mapa)
+
     lat0, lon0, k1, k2 = _ancla_proyeccion(linea_ref)
     for c in _contorno_tramos_wgs(geom_comun, lat0, lon0, k1, k2):
         folium.PolyLine(c, color=color_comun, weight=4, opacity=0.95).add_to(mapa)

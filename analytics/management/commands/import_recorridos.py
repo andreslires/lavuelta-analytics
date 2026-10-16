@@ -265,9 +265,9 @@ class Command(BaseCommand):
             etapa.distancia_oficial = distancia_oficial or etapa.distancia_oficial
             etapa.ganador = ganador
             etapa.gc_leader = gc_leader
-            etapa.resultados = resultados
+            # etapa.resultados = resultados  <-- Eliminado (ya en ResultadoEtapa)
             etapa.save(update_fields=[
                 'fecha', 'localidad_inicio', 'localidad_fin',
-                'distancia_oficial', 'ganador', 'gc_leader', 'resultados',
+                'distancia_oficial', 'ganador', 'gc_leader',
             ])
             contador['actualizadas'] += 1

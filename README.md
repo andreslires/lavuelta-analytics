@@ -2,7 +2,7 @@
 
 La idea de este proyecto es **visualizar y analizar la historia de La Vuelta a España** (2011–2026) de una manera clara, práctica y visual. En lugar de quedarme con tablas, quería crear una web donde pudiera ver el recorrido de cada edición, su perfil, su dureza y comparar distintas vueltas entre sí para entender cómo ha evolucionado la carrera.
 
-Este repositorio es un **portafolio/demostración**: muestra la estructura, el código y el resultado visual. Los datos en bruto (`data/`, GPX y JSON), la base de datos SQLite y las variables de entorno son locales y **no se publican** (ver `.gitignore`).
+Este repositorio es un **portafolio/demostración**: muestra la estructura, el código y el resultado visual.
 
 ## ¿Qué es esta web?
 
@@ -83,15 +83,14 @@ proyecto-lavuelta/
 │   ├── admin.py                 # Registro en Django Admin
 │   ├── tests.py                 # Tests básicos
 │   │
-│   ├── management/commands/     # Comandos personalizados de Django
-│   │   ├── import_recorridos.py      # Importa datos desde data/recorridos/ (JSON)
-│   │   ├── import_data.py            # Importa etapas desde GPX (data/<año>/)
-│   │   ├── precompute_metrics.py     # Precalcula métricas de terreno
-│   │   ├── precompute_perfiles.py    # Precalcula perfiles normalizados (comparador)
-│   │   ├── backfill_perfil_real.py   # Rellena perfil_real desde GPX
-│   │   ├── backfill_perfil_metrics.py# Rellena métricas desde perfil_real
-│   │   ├── backfill_resultados_2026.py
-│   │   └── recalcular_pendientes.py # Recalcula pendiente máxima (P99)
+│   ├── management/commands/          # Comandos personalizados de Django
+│   │   ├── import_recorridos.py        # Importa datos desde data/recorridos/ (JSON)
+│   │   ├── import_data.py              # Importa etapas desde GPX (data/<año>/)
+│   │   ├── precompute_metrics.py       # Precalcula métricas de terreno
+│   │   ├── precompute_perfiles.py      # Precalcula perfiles normalizados (comparador)
+│   │   ├── backfill_perfil_real.py     # Rellena perfil_real desde GPX
+│   │   ├── backfill_perfil_metrics.py  # Rellena métricas desde perfil_real
+│   │   └── recalcular_pendientes.py    # Recalcula pendiente máxima (P99)
 │   │
 │   ├── migrations/               # Migraciones de la base de datos
 │   │
@@ -117,23 +116,19 @@ proyecto-lavuelta/
 │   │   ├── _tipo_icono.html             # Icono por tipo de etapa
 │   │   └── partials/
 │   │       ├── charts.html              # Fragmento HTMX para gráficas
-│   │       └── map_preview.html          # Fragmento HTMX para mapa preview
+│   │       └── map_preview.html         # Fragmento HTMX para mapa preview
 │   │
 │   └── static/analytics/          # Archivos estáticos
-│       ├── css/                   # Estilos CSS (tema oscuro, responsive)
+│       ├── css/                   # Estilos CSS
 │       ├── favicon.svg            # Favicon
 │       └── vendor/plotly.min.js   # Plotly para gráficas interactivas
 │
-├── data/                        # Datos locales (GPX + JSON) — NO se publica
-├── cache/                       # Caché en disco (mapas, gráficas) — NO se publica
+├── data/                        # Datos locales (GPX + JSON) - Nos se publica
+├── cache/                       # Caché en disco (mapas, gráficas) - No se publica
 ├── db.sqlite3                   # Base de datos — NO se publica
-├── .env                         # Variables de entorno — NO se publica
 ├── .env.example                 # Plantilla de variables de entorno
-├── .gitignore                   # Exclusiones para Git
 ├── manage.py                    # CLI de Django
 ├── requirements.txt             # Dependencias Python
-├── pyproject.toml               # Configuración de Ruff
-├── GUIA_ADMIN_INTERNA.md         # Guía de administración (solo local)
 └── README.md                    # Este documento
 ```
 

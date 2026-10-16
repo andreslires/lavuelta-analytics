@@ -377,10 +377,8 @@ def etapa_detalle(request, year, numero):
         if request.headers.get('HX-Request')
         else 'analytics/etapa_detalle.html'
     )
-    try:
-        resultados = json.loads(etapa.resultados or '[]')
-    except (ValueError, TypeError):
-        resultados = []
+    # Cargamos resultados de la nueva tabla relacional
+    resultados = etapa.resultados_db.all().order_by('posicion')
     return render(request, template, {
         'etapa': etapa,
         'map_html': map_html,
@@ -419,7 +417,27 @@ def _mapa_plot_gpx(etapa):
         attr=TILE_ATTR,
         subdomains=TILE_SUBDOMAINS,
     )
-    folium.PolyLine(df[['latitude', 'longitude']].values, color=COLOR_ROJO, weight=5, opacity=0.9).add_to(mapa)
+    coords = df[['latitude', 'longitude']].values
+    folium.PolyLine(coords, color=COLOR_ROJO, weight=5, opacity=0.9).add_to(mapa)
+    
+    if coords.size > 0:
+        folium.Marker(
+            location=(float(coords[0, 0]), float(coords[0, 1])),
+            icon=folium.DivIcon(
+                html='<div style="background-color: green; color: white; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; border: 1px solid white;"><i class="fa fa-play" style="font-size: 7px;"></i></div>',
+                icon_size=(14, 14), icon_anchor=(7, 7)
+            ),
+            tooltip='Inicio'
+        ).add_to(mapa)
+        folium.Marker(
+            location=(float(coords[-1, 0]), float(coords[-1, 1])),
+            icon=folium.DivIcon(
+                html='<div style="background-color: red; color: white; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; border: 1px solid white;"><i class="fa fa-flag" style="font-size: 7px;"></i></div>',
+                icon_size=(14, 14), icon_anchor=(7, 7)
+            ),
+            tooltip='Meta'
+        ).add_to(mapa)
+
     mapa.fit_bounds(
         [[df.latitude.min(), df.longitude.min()],
          [df.latitude.max(), df.longitude.max()]],
@@ -474,7 +492,7 @@ def _mapa_plot_sin_gpx(etapa):
 def mapa_general(request):
     tab = request.GET.get('tab')
     if tab not in ('etapas', 'provincias'):
-        tab = 'etapas'
+        tab = None
     map_html = _mapa_html_cached('mapa_etapas_html', build_mapa_general)
     provincias_html = _mapa_html_cached('mapa_provincias_html', build_mapa_provincias)
     return render(request, 'analytics/mapa_general.html', {
@@ -651,7 +669,7 @@ def comparar(request):
     # indica (o es inválido) se deduce de los parámetros de cada pestaña.
     tab = request.GET.get('tab')
     if tab not in ('ediciones', 'perfiles', 'zonas'):
-        tab = 'zonas' if z1 else ('perfiles' if p1 else 'ediciones')
+        tab = None
     perfiles = {
         'perfil_e1': None,
         'perfil_e2': None,

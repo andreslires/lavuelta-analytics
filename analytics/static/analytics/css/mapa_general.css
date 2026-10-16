@@ -1,4 +1,4 @@
-/* mapa_general.css — Mapa comparativo de todas las ediciones */
+/* mapa_general.css - Mapa comparativo de todas las ediciones */
 .map-header { margin-bottom: 2rem; }
 .map-title { font-family: 'Barlow Condensed', sans-serif; font-size: 2.25rem; color: #fff; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; }
 .map-subtitle { color: var(--text-dim); margin-top: 0.5rem; }
@@ -8,7 +8,7 @@
   display: flex;
   gap: 0.25rem;
   border-bottom: 1px solid var(--border-strong);
-  margin-bottom: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 .map-tab {
   background: none;
@@ -27,6 +27,23 @@
 }
 .map-tab:hover { color: #fff; }
 .map-tab.is-active { color: #fff; border-bottom-color: var(--accent); }
+
+/* ---------- Placeholder ---------- */
+.comp-placeholder {
+  border: 1px dashed var(--border-strong);
+  padding: 4rem 2rem;
+  text-align: center;
+  background: var(--panel-soft);
+}
+.comp-placeholder-index {
+  font-family: 'Barlow', sans-serif;
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  margin-bottom: 1rem;
+}
+.comp-placeholder-title { font-size: 2rem; color: #fff; margin-bottom: 0.75rem; }
+.comp-placeholder-text { color: var(--text-dim); max-width: 34rem; margin: 0 auto; }
 
 .map-panel { display: none; }
 .map-panel.is-active { display: block; }

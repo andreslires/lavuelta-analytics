@@ -50,8 +50,32 @@ class Etapa(models.Model):
     distancia_oficial = models.FloatField(null=True, blank=True)
     ganador = models.CharField(max_length=200, blank=True, default='')
     gc_leader = models.CharField(max_length=200, blank=True, default='')
-    # JSON: [{position, rider, team, nationality, time, gap}, ...]
-    resultados = models.TextField(blank=True, default='')
 
     def __str__(self):
         return f"{self.edicion.year} - Etapa {self.numero}: {self.nombre}"
+
+
+class Ciclista(models.Model):
+    nombre = models.CharField(max_length=200, unique=True)
+    
+    def __str__(self):
+        return self.nombre
+
+
+class Equipo(models.Model):
+    nombre = models.CharField(max_length=200, unique=True)
+    
+    def __str__(self):
+        return self.nombre
+
+
+class ResultadoEtapa(models.Model):
+    etapa = models.ForeignKey(Etapa, on_delete=models.CASCADE, related_name='resultados_db')
+    ciclista = models.ForeignKey(Ciclista, on_delete=models.CASCADE)
+    equipo = models.ForeignKey(Equipo, on_delete=models.SET_NULL, null=True, blank=True)
+    posicion = models.IntegerField()
+    tiempo = models.CharField(max_length=50, blank=True, null=True)
+    diferencia = models.CharField(max_length=50, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.etapa} - {self.ciclista.nombre} ({self.posicion}º)"
