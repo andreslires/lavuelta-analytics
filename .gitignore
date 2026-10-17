@@ -48,3 +48,5 @@ mapa_provincias_cache.geojson
 
 # Notas internas del administrador (no se publican)
 GUIA_ADMIN_INTERNA.md
+
+site_static/

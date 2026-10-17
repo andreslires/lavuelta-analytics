@@ -131,4 +131,3 @@ proyecto-lavuelta/
 ├── requirements.txt             # Dependencias Python
 └── README.md                    # Este documento
 ```
-

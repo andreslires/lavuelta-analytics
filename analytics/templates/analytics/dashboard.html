@@ -66,6 +66,7 @@
 </section>
 
 <h2 class="section-title"><span class="section-index">03</span> Comparativa de ediciones</h2>
+{% if not static_export %}
 <div class="filter-bar">
     <span class="filter-label">Comparar ediciones:</span>
     <div class="dropdown filter-dropdown">
@@ -105,6 +106,7 @@
     });
 })();
 </script>
+{% endif %}
 
 <div class="route-loader" id="charts-loading">
     <div class="route-loader-road">

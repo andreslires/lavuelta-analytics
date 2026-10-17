@@ -4,9 +4,9 @@
             {% if prev_etapa %}
             <a class="nav-btn"
                href="{% url 'etapa_detalle' etapa.edicion.year prev_etapa.numero %}"
-               hx-get="{% url 'etapa_detalle' etapa.edicion.year prev_etapa.numero %}"
+               {% if not static_export %}hx-get="{% url 'etapa_detalle' etapa.edicion.year prev_etapa.numero %}"
                hx-target="#etapa-content" hx-swap="outerHTML" hx-push-url="true"
-               hx-indicator="#etapa-loading"
+               hx-indicator="#etapa-loading"{% endif %}
                aria-label="Etapa anterior" title="{{ prev_etapa.nombre }}"><svg class="ico"><use href="#ix-chevron-l"/></svg></a>
             {% else %}
             <span class="nav-btn disabled"><svg class="ico"><use href="#ix-chevron-l"/></svg></span>
@@ -26,9 +26,9 @@
             {% if next_etapa %}
             <a class="nav-btn"
                href="{% url 'etapa_detalle' etapa.edicion.year next_etapa.numero %}"
-               hx-get="{% url 'etapa_detalle' etapa.edicion.year next_etapa.numero %}"
+               {% if not static_export %}hx-get="{% url 'etapa_detalle' etapa.edicion.year next_etapa.numero %}"
                hx-target="#etapa-content" hx-swap="outerHTML" hx-push-url="true"
-               hx-indicator="#etapa-loading"
+               hx-indicator="#etapa-loading"{% endif %}
                aria-label="Etapa siguiente" title="{{ next_etapa.nombre }}"><svg class="ico"><use href="#ix-chevron-r"/></svg></a>
             {% else %}
             <span class="nav-btn disabled"><svg class="ico"><use href="#ix-chevron-r"/></svg></span>

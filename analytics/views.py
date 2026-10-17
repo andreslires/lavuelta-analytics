@@ -397,6 +397,30 @@ def etapa_detalle(request, year, numero):
     })
 
 
+def _marcadores_inicio_meta(mapa, inicio, meta):
+    """Añade al mapa la bandera verde de Inicio y la roja de Meta.
+
+    `inicio` y `meta` son (latitud, longitud). Se usa tanto para etapas con GPX
+    como para las importadas sin GPX, para que todas se vean igual.
+    """
+    folium.Marker(
+        location=(float(inicio[0]), float(inicio[1])),
+        icon=folium.DivIcon(
+            html='<div style="background-color: green; color: white; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; border: 1px solid white;"><i class="fa fa-play" style="font-size: 7px;"></i></div>',
+            icon_size=(14, 14), icon_anchor=(7, 7)
+        ),
+        tooltip='Inicio'
+    ).add_to(mapa)
+    folium.Marker(
+        location=(float(meta[0]), float(meta[1])),
+        icon=folium.DivIcon(
+            html='<div style="background-color: red; color: white; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; border: 1px solid white;"><i class="fa fa-flag" style="font-size: 7px;"></i></div>',
+            icon_size=(14, 14), icon_anchor=(7, 7)
+        ),
+        tooltip='Meta'
+    ).add_to(mapa)
+
+
 def _mapa_plot_gpx(etapa):
     """Mapa + perfil de una etapa con archivo GPX local (procesado en caché)."""
     # Cargar datos reales (cacheados por archivo GPX)
@@ -421,22 +445,7 @@ def _mapa_plot_gpx(etapa):
     folium.PolyLine(coords, color=COLOR_ROJO, weight=5, opacity=0.9).add_to(mapa)
     
     if coords.size > 0:
-        folium.Marker(
-            location=(float(coords[0, 0]), float(coords[0, 1])),
-            icon=folium.DivIcon(
-                html='<div style="background-color: green; color: white; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; border: 1px solid white;"><i class="fa fa-play" style="font-size: 7px;"></i></div>',
-                icon_size=(14, 14), icon_anchor=(7, 7)
-            ),
-            tooltip='Inicio'
-        ).add_to(mapa)
-        folium.Marker(
-            location=(float(coords[-1, 0]), float(coords[-1, 1])),
-            icon=folium.DivIcon(
-                html='<div style="background-color: red; color: white; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; border: 1px solid white;"><i class="fa fa-flag" style="font-size: 7px;"></i></div>',
-                icon_size=(14, 14), icon_anchor=(7, 7)
-            ),
-            tooltip='Meta'
-        ).add_to(mapa)
+        _marcadores_inicio_meta(mapa, coords[0], coords[-1])
 
     mapa.fit_bounds(
         [[df.latitude.min(), df.longitude.min()],
@@ -468,6 +477,8 @@ def _mapa_plot_sin_gpx(etapa):
         subdomains=TILE_SUBDOMAINS,
     )
     folium.PolyLine(coords, color=COLOR_ROJO, weight=5, opacity=0.9).add_to(mapa)
+    if coords:
+        _marcadores_inicio_meta(mapa, coords[0], coords[-1])
     mapa.fit_bounds(
         [[min(lats), min(lons)], [max(lats), max(lons)]],
         padding=(30, 30),

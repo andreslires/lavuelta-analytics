@@ -21,7 +21,7 @@
     <a class="ayuda-index-card" href="#dashboard"><span class="ayuda-index-num">01</span> Dashboard</a>
     <a class="ayuda-index-card" href="#mapa"><span class="ayuda-index-num">02</span> Mapa</a>
     <a class="ayuda-index-card" href="#ediciones"><span class="ayuda-index-num">03</span> Ediciones</a>
-    <a class="ayuda-index-card" href="#comparar"><span class="ayuda-index-num">04</span> Comparar</a>
+    {% if not static_export %}<a class="ayuda-index-card" href="#comparar"><span class="ayuda-index-num">04</span> Comparar</a>{% endif %}
     <a class="ayuda-index-card" href="#etapa"><span class="ayuda-index-num">05</span> Etapa</a>
 </nav>
 
@@ -41,10 +41,12 @@
             <dt>Datos geográficos</dt>
             <dd>Comunidades visitadas, la más recorrida, etapas con tramo fuera de España y su distribución.</dd>
         </div>
+        {% if not static_export %}
         <div class="ayuda-def">
             <dt>Comparativa de ediciones</dt>
             <dd>Marca o desmarca ediciones para filtrar las gráficas. La selección queda en la URL, así que es compartible.</dd>
         </div>
+        {% endif %}
         <div class="ayuda-def">
             <dt>Detalle de ediciones</dt>
             <dd>Una tarjeta por edición; al pulsarla entras en su página.</dd>
@@ -93,6 +95,7 @@
     </dl>
 </section>
 
+{% if not static_export %}
 <section class="ayuda-section" id="comparar">
     <h2 class="section-title"><span class="section-index">04</span> Comparar</h2>
     <p class="ayuda-lead">Tres pestañas, cada una con su propia dirección.</p>
@@ -112,6 +115,7 @@
         <p>Elige una etapa de referencia y se buscan, en cualquier edición, las etapas que comparten un tramo real de carretera con ella (al menos ~3 km continuos, con 50 m de margen). Cada fila es un desplegable: al abrirlo se carga el mapa con el recorrido de ambas y el tramo común resaltado, y puedes abrir varios a la vez.</p>
     </div>
 </section>
+{% endif %}
 
 <section class="ayuda-section" id="etapa">
     <h2 class="section-title"><span class="section-index">05</span> Etapa</h2>

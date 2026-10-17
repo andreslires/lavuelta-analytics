@@ -8,8 +8,6 @@ geopandas>=1.1,<2.0
 shapely>=2.0,<3.0               
 folium>=0.15,<1.0               
 plotly>=6.0,<8.0  
-gunicorn
-psycopg2-binary              
 
 
 ruff>=0.4,<1.0

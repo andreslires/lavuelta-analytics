@@ -33,7 +33,7 @@
             <div class="nav-links" id="nav-links">
                 <a href="/" class="nav-link" {% if request.path == '/' %}aria-current="page"{% endif %}>Dashboard</a>
                 <a href="{% url 'mapa_general' %}" class="nav-link" {% if request.path == '/mapa-general/' %}aria-current="page"{% endif %}>Mapa</a>
-                <a href="{% url 'comparar' %}" class="nav-link" {% if request.path == '/comparar/' %}aria-current="page"{% endif %}>Comparar</a>
+                {% if not static_export %}<a href="{% url 'comparar' %}" class="nav-link" {% if request.path == '/comparar/' %}aria-current="page"{% endif %}>Comparar</a>{% endif %}
                 <div class="dropdown">
                     <button class="nav-link" type="button">Ediciones <svg class="ico ico-caret" aria-hidden="true"><use href="#ix-chevron"/></svg></button>
                     <div class="dropdown-menu">

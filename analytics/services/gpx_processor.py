@@ -103,13 +103,41 @@ class GPXProcessor:
         self.file_path = file_path
         self.gpx = self._load_gpx()
 
+    def _resolver_ruta(self):
+        """Localiza el .gpx en disco.
+
+        Orden de búsqueda:
+          1. La ruta guardada en la BD (data/<año>/<fichero>.gpx), válida si se
+             ejecuta desde la raíz del proyecto.
+          2. DATA_PATH/<fichero> (ficheros sueltos directamente en data/).
+          3. Cualquier subcarpeta de DATA_PATH; si hay varios con el mismo nombre
+             se prefiere el que está en una carpeta con el mismo nombre (el año).
+        """
+        ruta_guardada = os.path.normpath(self.file_path)
+        nombre_archivo = os.path.basename(ruta_guardada)
+        carpeta_anyo = os.path.basename(os.path.dirname(ruta_guardada))
+
+        for candidata in (ruta_guardada, os.path.join(settings.DATA_PATH, nombre_archivo)):
+            if os.path.isfile(candidata):
+                return candidata
+
+        encontrados = []
+        for raiz, _, ficheros in os.walk(settings.DATA_PATH):
+            if nombre_archivo in ficheros:
+                encontrados.append(os.path.join(raiz, nombre_archivo))
+        for ruta in encontrados:
+            if os.path.basename(os.path.dirname(ruta)) == carpeta_anyo:
+                return ruta
+        if encontrados:
+            return encontrados[0]
+
+        raise FileNotFoundError(
+            f'No encuentro el GPX "{nombre_archivo}". Busqué en {ruta_guardada} y en '
+            f'{settings.DATA_PATH} (incluidas sus subcarpetas).'
+        )
+
     def _load_gpx(self):
-        # Usamos os.path.basename para ignorar la ruta completa del sistema
-        # anterior y buscar el archivo siempre en DATA_PATH.
-        nombre_archivo = os.path.basename(self.file_path)
-        ruta_correcta = os.path.join(settings.DATA_PATH, nombre_archivo)
-        
-        with open(ruta_correcta, 'rb') as gpx_file:
+        with open(self._resolver_ruta(), 'rb') as gpx_file:
             return gpxpy.parse(gpx_file.read().decode('utf-8'))
 
     def process(self):
