@@ -260,3 +260,44 @@ h1, h2, h3, .display {
   .logo-title em { display: none; }
   .logo-title { margin-right: 0; }
 }
+/* ---------- Footer ---------- */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 4rem 2rem 2rem;
+  margin-top: 5rem;
+  background: #0b0a08; /* Oscuro profundo */
+  color: var(--text-dim);
+  font-family: 'Barlow', sans-serif;
+}
+.footer-inner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 3rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.footer-col h4 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-faint);
+  margin-bottom: 1rem;
+}
+.footer-col ul { list-style: none; padding: 0; }
+.footer-col li { margin-bottom: 0.5rem; }
+.footer-col a {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.footer-col a:hover { color: var(--accent); }
+.footer-col a svg { width: 1rem; height: 1rem; }
+.footer-bottom {
+  text-align: center;
+  margin-top: 3rem;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+}

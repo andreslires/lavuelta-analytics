@@ -331,6 +331,7 @@
 {% endblock %}
 
 {% block extra_js %}
+{% if not static_export %}
 <script>
 (function(){
     // --- Selector en cascada de etapas: año → etapas de ese año ---
@@ -488,4 +489,5 @@
     });
 })();
 </script>
+{% endif %}
 {% endblock %}

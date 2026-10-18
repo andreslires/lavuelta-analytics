@@ -134,9 +134,9 @@ class Command(BaseCommand):
             ('/ayuda/', ['ayuda/index.html']),
             # El mapa se genera una sola vez y se guarda en dos sitios:
             # /mapa-general/ y /mapa-general/etapas/.
-            ('/mapa-general/?tab=etapas',
-             ['mapa-general/index.html', 'mapa-general/etapas/index.html']),
-            ('/mapa-general/?tab=provincias', ['mapa-general/provincias/index.html']),
+            ('/mapa-general/', ['mapa-general/index.html']),
+            ('/mapa-general/etapas/', ['mapa-general/etapas/index.html']),
+            ('/mapa-general/provincias/', ['mapa-general/provincias/index.html']),
         ]
 
         ediciones = Edicion.objects.order_by('year')

@@ -14,8 +14,8 @@
 
 <!-- ---------- Tabs ---------- -->
 <div class="map-tabs" role="tablist">
-    <a class="map-tab {% if tab == 'etapas' %}is-active{% endif %}" href="{% if static_export %}{% url 'mapa_general' %}etapas/{% else %}{% url 'mapa_general' %}?tab=etapas{% endif %}" role="tab">Etapas</a>
-    <a class="map-tab {% if tab == 'provincias' %}is-active{% endif %}" href="{% if static_export %}{% url 'mapa_general' %}provincias/{% else %}{% url 'mapa_general' %}?tab=provincias{% endif %}" role="tab">Provincias</a>
+    <a class="map-tab {% if tab == 'etapas' %}is-active{% endif %}" href="{% url 'mapa_general_etapas' %}" role="tab">Etapas</a>
+    <a class="map-tab {% if tab == 'provincias' %}is-active{% endif %}" href="{% url 'mapa_general_provincias' %}" role="tab">Provincias</a>
 </div>
 
 {% if not tab %}

@@ -501,7 +501,14 @@ def _mapa_plot_sin_gpx(etapa):
 
 
 def mapa_general(request):
+    # Detectar pestaña por URL friendly o por parámetro
     tab = request.GET.get('tab')
+    if not tab:
+        if request.resolver_match.url_name == 'mapa_general_etapas':
+            tab = 'etapas'
+        elif request.resolver_match.url_name == 'mapa_general_provincias':
+            tab = 'provincias'
+            
     if tab not in ('etapas', 'provincias'):
         tab = None
     map_html = _mapa_html_cached('mapa_etapas_html', build_mapa_general)
@@ -681,6 +688,8 @@ def comparar(request):
     tab = request.GET.get('tab')
     if tab not in ('ediciones', 'perfiles', 'zonas'):
         tab = None
+    if comparar_ok and not tab:
+        tab = 'ediciones'
     perfiles = {
         'perfil_e1': None,
         'perfil_e2': None,
