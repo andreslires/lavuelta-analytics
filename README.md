@@ -6,7 +6,7 @@
 [![Folium](https://img.shields.io/badge/Folium-Leaflet-77B829?style=flat&logo=leaflet&logoColor=white)](https://python-visualization.github.io/folium/)
 [![HTMX](https://img.shields.io/badge/HTMX-Dynamic_UI-3366CC?style=flat&logo=htmx&logoColor=white)](https://htmx.org/)
 
-Plataforma analítica y geoespacial para **visualizar, procesar y comparar el histórico completo de La Vuelta a España (2011–2026)**. Transforma ficheros GPX brutos y clasificaciones en mapas interactivos, métricas avanzadas de terreno y herramientas de análisis comparativo.
+Plataforma analítica y geoespacial para **visualizar, procesar y comparar el histórico de La Vuelta a España (2011–2026)**. Transforma ficheros GPX brutos y clasificaciones en mapas interactivos, métricas avanzadas de terreno y herramientas de análisis comparativo.
 
 > 🌐 **Demo online:** [https://andreslires.github.io/lavuelta-analytics-web/](https://andreslires.github.io/lavuelta-analytics-web/)  
 > *Nota: Esta demo es una exportación a sitio estático alojada en GitHub Pages para explorar el diseño, los mapas y las vistas principales. Al no contar con un backend Python activo, las funciones que requieren cómputo en vivo (el comparador en sus 3 modalidades, los filtros dinámicos del dashboard con URL compartible y el panel de administración) no están disponibles en la versión web estática.*
@@ -59,7 +59,7 @@ Para lograrlo, procesé los tracks oficiales en `.gpx` con Python, calculé las 
 
 ```bash
 # 1. Clonar el repositorio y acceder a la carpeta
-git clone [https://github.com/andreslires/lavuelta-analytics.git](https://github.com/andreslires/lavuelta-analytics.git)
+git clone https://github.com/andreslires/lavuelta-analytics.git
 cd lavuelta-analytics
 
 # 2. Crear y activar entorno virtual
