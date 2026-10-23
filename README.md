@@ -1,133 +1,116 @@
 # La Vuelta Analytics
 
-La idea de este proyecto es **visualizar y analizar la historia de La Vuelta a España** (2011–2026) de una manera clara, práctica y visual. En lugar de quedarme con tablas, quería crear una web donde pudiera ver el recorrido de cada edición, su perfil, su dureza y comparar distintas vueltas entre sí para entender cómo ha evolucionado la carrera.
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/Django-5.2-092E20?style=flat&logo=django&logoColor=white)](https://www.djangoproject.com/)
+[![Plotly](https://img.shields.io/badge/Plotly-Interactive-3F4F75?style=flat&logo=plotly&logoColor=white)](https://plotly.com/)
+[![Folium](https://img.shields.io/badge/Folium-Leaflet-77B829?style=flat&logo=leaflet&logoColor=white)](https://python-visualization.github.io/folium/)
+[![HTMX](https://img.shields.io/badge/HTMX-Dynamic_UI-3366CC?style=flat&logo=htmx&logoColor=white)](https://htmx.org/)
 
-Este repositorio es un **portafolio/demostración**: muestra la estructura, el código y el resultado visual.
+Plataforma analítica y geoespacial para **visualizar, procesar y comparar el histórico completo de La Vuelta a España (2011–2026)**. Transforma ficheros GPX brutos y clasificaciones en mapas interactivos, métricas avanzadas de terreno y herramientas de análisis comparativo.
 
-## ¿Qué es esta web?
+> 🌐 **Demo online:** [https://andreslires.github.io/lavuelta-analytics-web/](https://andreslires.github.io/lavuelta-analytics-web/)  
+> *Nota: Esta demo es una exportación a sitio estático alojada en GitHub Pages para explorar el diseño, los mapas y las vistas principales. Al no contar con un backend Python activo, las funciones que requieren cómputo en vivo (el comparador en sus 3 modalidades, los filtros dinámicos del dashboard con URL compartible y el panel de administración) no están disponibles en la versión web estática.*
 
-Es un dashboard hecho a medida para explorar las ediciones y etapas de La Vuelta. El objetivo ha sido combinar mapas, gráficas y métricas para que, con un par de clics, se pueda entender el carácter de cada etapa y de cada edición.
+---
 
-| Ruta | Qué muestra |
-|---|---|
-| `/` | **Dashboard** — visión global del histórico: kilómetros totales, desnivel acumulado, número de etapas y ediciones. Incluye gráficas interactivas (Plotly), mapa general con todas las etapas y mini-tarjetas por edición con el perfil resumido (sparklines). |
-| `/edicion/<year>/` | **Detalle de edición** — KPIs de la temporada, tabla de etapas con su perfil resumido, gráficas de desnivel, distancia y tipología, top-5 de la clasificación general, maillots y el perfil completo de cada etapa. |
-| `/etapa/<year>/<numero>/` | **Detalle de etapa** — mapa del recorrido (Folium) con el track dibujado, perfil altimétrico interactivo (Plotly), métricas de terreno (altitud máx/mín, desnivel negativo, pendiente máx/media, número de puertos), resultado de la etapa (ganador y podio). Con navegación entre etapas anterior/siguiente. |
-| `/comparar/` | **Comparador cara a cara** — dos pestañas: *Ediciones* (compara dos años: KPIs, gráficas superpuestas, boxplot de desnivel, mapa comparativo y zonas por CCAA) y *Perfiles similares* (busca etapas con perfil altimétrico parecido y las compara lado a lado). |
-| `/mapa-general/` | **Mapa general** — vista global de todas las etapas del histórico en un mapa oscuro, con pestaña adicional para ver el recorrido por provincias. |
-| `/ayuda/` | Guía breve de uso de la web. |
-| `/admin/` | Panel de administración de Django (para revisar o corregir datos puntuales). |
+## 💡 La idea detrás del proyecto
 
-La navegación es sencilla: barra superior con accesos directos y un desplegable con todas las ediciones. Los mapas y gráficas se cargan con **HTMX** para evitar recargas completas de página.
+El ciclismo es un deporte con una cantidad tremenda de datos, pero casi siempre están atrapados en PDFs oficiales que caducan de un año para otro, tablas estáticas o rutómetros difíciles de consultar a posteriori. La idea de construir **La Vuelta Analytics** nació de una inquietud personal: quería una herramienta que resolviera de verdad las preguntas y debates típicos que siempre surgen viendo la carrera o hablando de ciclismo:
 
-## Tecnologías utilizadas
+* **El mítico debate del reparto geográfico:** *"Es que La Vuelta siempre va a los mismos sitios"* o *"este año se han olvidado por completo de esta zona"*. En lugar de guiarnos por sensaciones, la web permite analizar la cobertura real: consultar las comunidades visitadas, las etapas que salieron fuera de España y, en el mapa de provincias, ver exactamente cuándo fue la última vez que la carrera pasó por un territorio concreto.
+* **El recuerdo histórico y los tramos compartidos:** *"¿Cuándo fue la última vez que se subió por este puerto o se pasó por esta carretera?"*. Para esto desarrollé el detector de Zonas comunes: seleccionas una etapa de referencia y el sistema calcula intersecciones espaciales para encontrar qué otras etapas de la historia compartieron al menos 3 kilómetros continuos de asfalto con ella.
+* **El clásico déjà vu de los perfiles:** *"Bua, juraría que hace unos años hubo una etapa clavadita a esta"*. Diseñé un comparador de perfiles altimétricos que permite buscar similitudes automáticas por correlación o enfrentar manualmente dos etapas cualesquiera para ver sus pendientes y métricas cara a cara.
+* **El cara a cara entre ediciones:** *"La Vuelta de este año es mucho más dura que la del anterior"* o *"antes se metía más contrarreloj y menos finales en alto"*. El comparador enfrenta dos años al detalle: superpone sus gráficas de kilometraje y desnivel, analiza la distribución de dureza y dibuja el mapa conjunto de ambas ediciones.
 
-| Tecnología | Uso |
-|---|---|
-| [Django 5.2](https://www.djangoproject.com/) | Framework backend (vistas, modelos, gestión de datos y URLs). |
-| [SQLite](https://www.sqlite.org/) | Base de datos ligera para guardar ediciones, etapas, métricas y perfiles. |
-| [Plotly](https://plotly.com/python/) | Gráficas interactivas (perfiles altimétricos, comparativas, boxplots) generadas en servidor e incrustadas en HTML. |
-| [Folium](https://python-visualization.github.io/folium/) | Mapas interactivos (Leaflet). Usa tiles oscuros (CartoDB Dark Matter) para mantener el estilo visual. |
-| [GeoPandas](https://geopandas.org/) / [Shapely](https://shapely.readthedocs.io/) | Tratamiento de geometrías (tracks, buffers y solapes para detectar tramos comunes). |
-| [pandas](https://pandas.pydata.org/) / [numpy](https://numpy.org/) | Procesamiento y cálculo de perfiles, pendientes y métricas de terreno. |
-| [gpxpy](https://github.com/tkrajina/gpxpy) | Lectura y procesamiento de ficheros GPX oficiales. |
-| [geopy](https://geopy.readthedocs.io/) | Cálculos de distancias geodésicas entre puntos. |
-| [HTMX](https://htmx.org/) | Carga parcial de contenido (gráficas/mapas) sin recargar la página completa. |
-| [CSS personalizado](https://developer.mozilla.org/es/docs/Web/CSS) | Tema oscuro hecho a medida, responsive y enfocado a lectura de datos. |
-| [django-environ](https://django-environ.readthedocs.io/) | Gestión de variables de entorno (`.env`). |
-| [Ruff](https://docs.astral.sh/ruff/) | Linting y formateado del código. |
+Al final, el objetivo no era solo hacer una web con números, sino crear una plataforma donde cualquier aficionado que quiera recordar ediciones pasadas, un comentarista en plena retransmisión buscando contexto rápido, o un analista que necesite medir la exigencia real del trazado puedan resolver estas dudas en un par de clics. 
 
-## Ejecución local
+Para lograrlo, procesé los tracks oficiales en `.gpx` con Python, calculé las pendientes reales, identifiqué puertos y tramos de carretera con librerías SIG (GeoPandas/Shapely) y parametricé los perfiles para permitir comparaciones directas entre etapas separadas por más de una década.
 
-> Para que la app funcione con datos reales hace falta la carpeta `data/` con los GPX/JSON y la base de datos poblada. Sin esos datos, la web se puede arrancar pero aparecerá vacía.
+---
+
+## 🧭 Módulos y Navegación
+
+| Ruta | Módulo | Descripción |
+|---|---|---|
+| `/` | **Dashboard Global** | Métricas acumuladas del histórico (km totales, desnivel, etapas y ediciones). Incluye mapa previo interactivo, métricas geográficas (comunidades y etapas internacionales), filtro dinámico de ediciones con URL compartible (`?years=...`) y tarjetas con *sparklines* altimétricos en SVG. |
+| `/mapa-general/` | **Mapa General** | Visor completo con dos pestañas directas: `?tab=etapas` (todas las rutas históricas clicables con acceso a su perfil) y `?tab=provincias` (provincias atravesadas con detalle de la última etapa que pasó por cada una). |
+| `/edicion/<year>/` | **Detalle de Edición** | KPIs de la temporada (dureza media, etapa más dura/larga/corta), clasificación general final, maillots oficiales, gráficas de desnivel/distancia/tipología y tarjetas individuales por etapa. |
+| `/etapa/<year>/<numero>/` | **Detalle de Etapa** | Mapa interactivo del recorrido (Folium), altimetría dinámica (Plotly), métricas de terreno (altitud máx/mín, pendiente máxima P99, pendiente media de puertos, total de puertos), podio del día y navegación anterior/siguiente. |
+| `/comparar/` *(Backend)* | **Comparador Multimodal** | Tres herramientas avanzadas:<br>• `?tab=ediciones`: Cara a cara entre dos años (KPIs, gráficas superpuestas, tipologías y mapa conjunto).<br>• `?tab=perfiles`: Búsqueda automática de etapas con perfil idéntico o enfrentamiento manual 1v1.<br>• `?tab=zonas`: Detección geoespacial de etapas que compartieron trazado (mínimo ~3 km continuos). |
+| `/ayuda/` | **Guía de uso** | Documentación integrada en la aplicación con el funcionamiento de cada vista y glosario. |
+| `/admin/` | **Administración** | Panel de control Django para mantenimiento y verificación de datos. |
+
+---
+
+## 🛠️ Tecnologías utilizadas
+
+* **Backend:** [Django 5.2](https://www.djangoproject.com/) con arquitectura modular separada en modelos, vistas y servicios de dominio.
+* **Interactividad frontend:** [HTMX](https://htmx.org/) para actualización dinámica de gráficas y mapas en servidor sin recargar la página.
+* **Análisis geoespacial y GPX:** [GeoPandas](https://geopandas.org/), [Shapely](https://shapely.readthedocs.io/), [gpxpy](https://github.com/tkrajina/gpxpy) y [geopy](https://geopy.readthedocs.io/) para buffers de ruta, solapes de tramos e importación de tracks.
+* **Ciencia de datos:** [pandas](https://pandas.pydata.org/) y [NumPy](https://numpy.org/) para cálculo de desniveles, normalización de altimetrías y limpieza de pendientes por percentiles.
+* **Visualización:** [Plotly Python](https://plotly.com/python/) (gráficas interactivas incrustadas) y [Folium](https://python-visualization.github.io/folium/) con mapa base oscuro (*CartoDB Dark Matter*).
+* **Calidad y configuración:** [django-environ](https://django-environ.readthedocs.io/) y [Ruff](https://docs.astral.sh/ruff/) para linting y formateo.
+
+---
+
+## 🚀 Puesta en marcha en local
+
+> **Nota sobre los datos:** La aplicación requiere los archivos GPX/JSON de las etapas y la base de datos poblada para reflejar los recorridos reales. Por motivos de derechos sobre los tracks oficiales de carrera, la carpeta `data/` y la base de datos SQLite no forman parte del repositorio público.
 
 ```bash
-# 1. Crear entorno virtual e instalar dependencias
-python -m venv venv
-venv\Scripts\activate          # Windows
+# 1. Clonar el repositorio y acceder a la carpeta
+git clone [https://github.com/andreslires/lavuelta-analytics.git](https://github.com/andreslires/lavuelta-analytics.git)
+cd lavuelta-analytics
 
+# 2. Crear y activar entorno virtual
+python -m venv venv
+
+# En Windows:
+venv\Scripts\activate
+# En Linux/macOS:
+source venv/bin/activate
+
+# 3. Instalar dependencias
 pip install -r requirements.txt
 
-# 2. Copiar variables de entorno
-copy .env.example .env
+# 4. Configurar variables de entorno
+copy .env.example .env    # En Linux/macOS: cp .env.example .env
 
-# 3. Ejecutar migraciones
+# 5. Ejecutar migraciones
 python manage.py migrate
 
-# 4. Crear superusuario (opcional, para /admin/)
+# 6. Crear superusuario (opcional, para acceder a /admin/)
 python manage.py createsuperuser
 
-# 5. Arrancar el servidor
+# 7. Iniciar el servidor de desarrollo
 python manage.py runserver 127.0.0.1:8123 --noreload
+
 ```
 
-La app estará disponible en [http://127.0.0.1:8123/](http://127.0.0.1:8123/).
+La aplicación estará lista en [http://127.0.0.1:8123/](http://127.0.0.1:8123/).
 
-## Arquitectura
+---
 
-El proyecto sigue una arquitectura limpia y separada por responsabilidades (MVC + services):
+## 🏗️ Arquitectura del proyecto
+
+El código mantiene una estricta separación de responsabilidades, aislando los cálculos matemáticos y espaciales dentro de una capa de **servicios**:
 
 ```text
 proyecto-lavuelta/
-├── core/                        # Configuración global de Django
-│   ├── settings.py              # Configuración (SQLite, caché en disco, django-environ)
-│   ├── urls.py                  # Enrutado raíz → app analytics
-│   ├── context_processors.py    # Inyecta todas las ediciones en los templates
-│   ├── asgi.py                  # Configuración ASGI
-│   └── wsgi.py                  # Configuración WSGI
-│
-├── analytics/                   # App principal
-│   ├── models.py                # Modelos: Edicion, Etapa
-│   ├── views.py                 # Vistas públicas (dashboard, edición, etapa, comparador, mapa...)
-│   ├── urls.py                  # Rutas de la app
-│   ├── admin.py                 # Registro en Django Admin
-│   ├── tests.py                 # Tests básicos
-│   │
-│   ├── management/commands/          # Comandos personalizados de Django
-│   │   ├── import_recorridos.py        # Importa datos desde data/recorridos/ (JSON)
-│   │   ├── import_data.py              # Importa etapas desde GPX (data/<año>/)
-│   │   ├── precompute_metrics.py       # Precalcula métricas de terreno
-│   │   ├── precompute_perfiles.py      # Precalcula perfiles normalizados (comparador)
-│   │   ├── backfill_perfil_real.py     # Rellena perfil_real desde GPX
-│   │   ├── backfill_perfil_metrics.py  # Rellena métricas desde perfil_real
-│   │   └── recalcular_pendientes.py    # Recalcula pendiente máxima (P99)
-│   │
-│   ├── migrations/               # Migraciones de la base de datos
-│   │
-│   ├── services/                # Lógica de negocio separada de las vistas
-│   │   ├── charts.py             # Generación de gráficas Plotly (servidor)
-│   │   ├── geografia.py          # Generación de mapas Folium (tramos, provincias, comparador)
-│   │   ├── gpx_processor.py      # Procesamiento de GPX (perfil, métricas, detección de puertos)
-│   │   ├── perfiles_similares.py # Lógica de similitud entre perfiles altimétricos
-│   │   ├── sparkline.py          # Generación de SVG sparklines (perfiles miniatura)
-│   │   └── __init__.py
-│   │
-│   ├── templates/analytics/      # Plantillas HTML
-│   │   ├── base.html                    # Layout base (navbar, meta, CSS/JS)
-│   │   ├── dashboard.html               # Dashboard principal
-│   │   ├── edicion_detalle.html         # Detalle de edición
-│   │   ├── etapa_detalle.html           # Detalle de etapa (layout)
-│   │   ├── etapa_detalle_content.html   # Fragmento HTMX
-│   │   ├── comparador.html              # Comparador cara a cara
-│   │   ├── mapa_general.html            # Mapa general (etapas/provincias)
-│   │   ├── ayuda.html                   # Página de ayuda
-│   │   ├── _icons.html                  # Sprite SVG de iconos
-│   │   ├── _perfiles_resultado.html     # Partial para perfiles similares
-│   │   ├── _tipo_icono.html             # Icono por tipo de etapa
-│   │   └── partials/
-│   │       ├── charts.html              # Fragmento HTMX para gráficas
-│   │       └── map_preview.html         # Fragmento HTMX para mapa preview
-│   │
-│   └── static/analytics/          # Archivos estáticos
-│       ├── css/                   # Estilos CSS
-│       ├── favicon.svg            # Favicon
-│       └── vendor/plotly.min.js   # Plotly para gráficas interactivas
-│
-├── data/                        # Datos locales (GPX + JSON) - Nos se publica
-├── cache/                       # Caché en disco (mapas, gráficas) - No se publica
-├── db.sqlite3                   # Base de datos — NO se publica
-├── .env.example                 # Plantilla de variables de entorno
-├── manage.py                    # CLI de Django
-├── requirements.txt             # Dependencias Python
-└── README.md                    # Este documento
+├── core/                         # Configuración Django (settings, urls, WSGI/ASGI, context processors)
+├── analytics/                    # Aplicación analítica
+│   ├── models.py                 # Modelos: Edicion, Etapa
+│   ├── views.py                  # Controladores de vistas y respuestas HTMX
+│   ├── services/                 # Lógica de negocio desacoplada de las vistas
+│   │   ├── charts.py             # Renderizado de figuras Plotly (perfiles y comparativas)
+│   │   ├── geografia.py          # Renderizado de mapas Folium y cálculo de tramos/zonas
+│   │   ├── gpx_processor.py      # Parseo GPX, cálculo de pendientes (P99) y detección de puertos
+│   │   ├── perfiles_similares.py # Algoritmo de correlación altimétrica entre etapas
+│   │   └── sparkline.py          # Generador de perfiles SVG en miniatura
+│   ├── management/commands/      # Comandos de importación, backfill y precomputación
+│   ├── templates/analytics/      # Templates HTML y partials HTMX
+│   └── static/analytics/         # CSS a medida (tema oscuro) y scripts vendor
+├── requirements.txt              # Dependencias de Python
+└── manage.py                     # CLI de Django
+
 ```
