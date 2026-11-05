@@ -209,7 +209,6 @@ class Command(BaseCommand):
         gc_leader_obj = detail.get('gcLeader') or {}
         if gc_leader_obj.get('rider'):
             gc_leader = gc_leader_obj['rider']
-        resultados = json.dumps(detail.get('stageResult') or [], ensure_ascii=False)
 
         points = detail.get('points') or []
         profile = detail.get('profile') or []
@@ -254,7 +253,6 @@ class Command(BaseCommand):
                 distancia_oficial=distancia_oficial or None,
                 ganador=ganador,
                 gc_leader=gc_leader,
-                resultados=resultados,
             )
             contador['creadas'] += 1
         else:
@@ -265,7 +263,7 @@ class Command(BaseCommand):
             etapa.distancia_oficial = distancia_oficial or etapa.distancia_oficial
             etapa.ganador = ganador
             etapa.gc_leader = gc_leader
-            # etapa.resultados = resultados  <-- Eliminado (ya en ResultadoEtapa)
+            # Los resultados ya no se guardan en Etapa: viven en ResultadoEtapa.
             etapa.save(update_fields=[
                 'fecha', 'localidad_inicio', 'localidad_fin',
                 'distancia_oficial', 'ganador', 'gc_leader',
