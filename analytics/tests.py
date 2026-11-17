@@ -9,6 +9,7 @@ from django.core.management.base import CommandError
 from django.test import TestCase, SimpleTestCase, Client, override_settings
 from django.urls import reverse
 from analytics.management.commands.export_static import (
+    ajustar_og_url,
     parsear_lista,
     seleccionado,
     verificar_enlaces,
@@ -355,3 +356,17 @@ class VerificarEnlacesTests(SimpleTestCase):
             self._pagina(tmp, 'etapa/1/index.html', '<a href="/">inicio</a>')
             total, problemas = verificar_enlaces(tmp, '')
             self.assertEqual((total, problemas), (2, []))
+
+
+class OgUrlTests(SimpleTestCase):
+    def test_og_url_usa_la_ruta_publicada_sin_parametros(self):
+        html = b'<head><meta property="og:url" content="http://x/comparar/?a=2019&amp;b=2023"></head>'
+        host, base = 'andreslires.github.io', '/lavuelta-analytics-web'
+        self.assertEqual(
+            ajustar_og_url(html, host, base, 'comparar/2019-2023/index.html'),
+            b'<head><meta property="og:url" content="https://andreslires.github.io/lavuelta-analytics-web/comparar/2019-2023/"></head>',
+        )
+        self.assertIn(
+            b'content="https://andreslires.github.io/"',
+            ajustar_og_url(html, host, '', 'index.html'),
+        )

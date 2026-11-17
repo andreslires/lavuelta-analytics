@@ -160,6 +160,20 @@ def verificar_enlaces(out, base):
     return total, problemas
 
 
+_RE_OG_URL = re.compile(rb'(<meta property="og:url" content=")[^"]*(")')
+
+
+def ajustar_og_url(contenido, host, base, destino):
+    """Pone en og:url la dirección donde se publica el fichero.
+
+    Algunas páginas se piden con ?parámetros (p. ej. /comparar/?tab=zonas) que en
+    un hosting estático no existen; la URL canónica es la ruta del fichero.
+    """
+    ruta = destino[:-len('index.html')] if destino.endswith('index.html') else destino
+    url = f'https://{host}{base}/{ruta}'.encode()
+    return _RE_OG_URL.sub(lambda m: m.group(1) + url + m.group(2), contenido, count=1)
+
+
 class Command(BaseCommand):
     help = 'Exporta el sitio a HTML estático (sin servidor) en la carpeta --out.'
 
@@ -260,7 +274,7 @@ class Command(BaseCommand):
                     continue
                 contenido = prefijar_enlaces(resp.content, base, host)
                 for rel in destinos:
-                    self._escribir(out / rel, contenido)
+                    self._escribir(out / rel, ajustar_og_url(contenido, host, base, rel))
                     escritos += 1
                 if i % 25 == 0 or i == total:
                     self.stdout.write(f'  {i}/{total} páginas  ({time.time() - t0:.0f}s)')
