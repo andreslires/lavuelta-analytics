@@ -50,6 +50,17 @@ class Etapa(models.Model):
     distancia_oficial = models.FloatField(null=True, blank=True)
     ganador = models.CharField(max_length=200, blank=True, default='')
     gc_leader = models.CharField(max_length=200, blank=True, default='')
+    # Una CRE/TTT se disputa por equipos: su resultado no se guarda como
+    # resultados individuales en ResultadoEtapa.
+    es_cre = models.BooleanField(default=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['edicion', 'numero'],
+                name='unique_etapa_edicion_numero',
+            ),
+        ]
 
     def __str__(self):
         return f"{self.edicion.year} - Etapa {self.numero}: {self.nombre}"
@@ -77,5 +88,84 @@ class ResultadoEtapa(models.Model):
     tiempo = models.CharField(max_length=50, blank=True, null=True)
     diferencia = models.CharField(max_length=50, blank=True, null=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['etapa', 'ciclista'],
+                name='unique_resultado_etapa_ciclista',
+            ),
+            models.UniqueConstraint(
+                fields=['etapa', 'posicion'],
+                name='unique_resultado_etapa_posicion',
+            ),
+        ]
+        indexes = [
+            models.Index(fields=['ciclista', 'posicion'], name='idx_resultado_ciclista_pos'),
+        ]
+
     def __str__(self):
         return f"{self.etapa} - {self.ciclista.nombre} ({self.posicion}º)"
+
+
+class ResultadoEquipoEtapa(models.Model):
+    """Resultado de una etapa disputada por equipos (CRE/TTT)."""
+    etapa = models.ForeignKey(
+        Etapa, on_delete=models.CASCADE, related_name='resultados_equipo'
+    )
+    equipo = models.ForeignKey(
+        Equipo, on_delete=models.CASCADE, related_name='resultados_etapa'
+    )
+    posicion = models.IntegerField()
+    tiempo = models.CharField(max_length=50, blank=True, null=True)
+    diferencia = models.CharField(max_length=50, blank=True, null=True)
+
+    class Meta:
+        ordering = ['etapa__edicion__year', 'etapa__numero', 'posicion']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['etapa', 'equipo'],
+                name='unique_resultado_equipo_etapa_equipo',
+            ),
+            models.UniqueConstraint(
+                fields=['etapa', 'posicion'],
+                name='unique_resultado_equipo_etapa_posicion',
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.etapa} - {self.equipo.nombre} ({self.posicion}º)"
+
+
+class ClasificacionGeneral(models.Model):
+    edicion = models.ForeignKey(
+        Edicion, on_delete=models.CASCADE, related_name='clasificaciones_generales'
+    )
+    ciclista = models.ForeignKey(
+        Ciclista, on_delete=models.CASCADE, related_name='clasificaciones_generales'
+    )
+    equipo = models.ForeignKey(
+        Equipo,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='clasificaciones_generales',
+    )
+    posicion = models.IntegerField()
+    tiempo = models.CharField(max_length=50, blank=True, null=True)
+    diferencia = models.CharField(max_length=50, blank=True, null=True)
+
+    class Meta:
+        ordering = ['edicion__year', 'posicion']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['edicion', 'ciclista'],
+                name='unique_gc_edicion_ciclista',
+            ),
+            models.UniqueConstraint(
+                fields=['edicion', 'posicion'],
+                name='unique_gc_edicion_posicion',
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.edicion.year} - {self.ciclista.nombre} ({self.posicion}º)"

@@ -1,0 +1,89 @@
+{% extends 'analytics/base.html' %}
+{% load static %}
+{% block title %}Ciclistas · La Vuelta Analytics{% endblock %}
+{% block description %}Directorio y ranking histórico de los {{ total }} ciclistas con resultados en La Vuelta a España 2011–2026: victorias, podios, top-10 y equipos.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'analytics/css/protagonistas.css' %}">
+{% endblock %}
+
+{% block content %}
+<header class="proto-header">
+    <h1 class="proto-title">Ciclistas</h1>
+    <p class="proto-subtitle">
+        Directorio y ranking histórico de los {{ total }} corredores con resultados en La Vuelta 2011–2026.
+        Cambia entre etapas y general para ver cada métrica.
+    </p>
+</header>
+
+<div class="proto-controls">
+    <div class="proto-search-box">
+        <svg class="ico" aria-hidden="true"><use href="#ix-search"/></svg>
+        <input type="search" class="proto-search" placeholder="Buscar un ciclista por nombre…"
+               aria-label="Buscar ciclista" data-filtro>
+    </div>
+
+    <div class="proto-scope" role="group" aria-label="Elegir estadísticas de etapa o general">
+        <button type="button" class="proto-scope-btn is-active" data-ambito="etapas" aria-pressed="true">Etapas</button>
+        <button type="button" class="proto-scope-btn" data-ambito="general" aria-pressed="false">General</button>
+    </div>
+
+    <div class="proto-sort">
+        <span class="proto-toolbar-label">Ordenar por</span>
+        <div class="proto-select-wrap">
+            <select class="proto-select" data-orden-select aria-label="Ordenar el ranking por">
+                <option value="victorias">Victorias</option>
+                <option value="podios">Podios</option>
+                <option value="top10">Top-10</option>
+                <option value="participaciones">Ediciones</option>
+                <option value="nombre">A–Z</option>
+            </select>
+            <svg class="ico proto-select-ico" aria-hidden="true"><use href="#ix-chevron"/></svg>
+        </div>
+    </div>
+</div>
+
+<div class="proto-table-wrap">
+    <table class="proto-table proto-ciclistas-table" data-tabla>
+        <thead>
+            <tr>
+                <th class="proto-rank">#</th>
+                <th>Ciclista</th>
+                <th class="num">Victorias</th>
+                <th class="num">Podios</th>
+                <th class="num">Top-10</th>
+                <th class="num col-part">Ediciones</th>
+                <th class="col-team">Equipo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in ciclistas %}
+            <tr data-nombre="{{ c.nombre }}"
+                data-victorias="{{ c.victorias }}"
+                data-victorias_gc="{{ c.victorias_gc }}"
+                data-podios="{{ c.podios }}"
+                data-podios_gc="{{ c.podios_gc }}"
+                data-top10="{{ c.top10 }}"
+                data-top10_gc="{{ c.top10_gc }}"
+                data-participaciones="{{ c.participaciones }}">
+                <td class="proto-rank" data-rank>{{ forloop.counter }}</td>
+                <td>
+                    <a class="proto-nombre cic-link" href="{% url 'ciclista_detalle' c.pk %}">{{ c.nombre }}</a>
+                    {% if c.y0 %}<span class="proto-years">{{ c.y0 }}–{{ c.y1 }}</span>{% endif %}
+                </td>
+                <td class="num cic-stat-cell" data-metrica="victorias" data-etapas="{{ c.victorias }}" data-general="{{ c.victorias_gc }}" title="Etapas: {{ c.victorias }} · General: {{ c.victorias_gc }}">{{ c.victorias }}</td>
+                <td class="num cic-stat-cell" data-metrica="podios" data-etapas="{{ c.podios }}" data-general="{{ c.podios_gc }}" title="Etapas: {{ c.podios }} · General: {{ c.podios_gc }}">{{ c.podios }}</td>
+                <td class="num cic-stat-cell" data-metrica="top10" data-etapas="{{ c.top10 }}" data-general="{{ c.top10_gc }}" title="Etapas: {{ c.top10 }} · General: {{ c.top10_gc }}">{{ c.top10 }}</td>
+                <td class="num col-part">{{ c.participaciones }}</td>
+                <td class="col-team"><span class="proto-team">{{ c.equipo|default:"—" }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<p class="proto-empty" data-vacio hidden>No hay ciclistas que coincidan con la búsqueda.</p>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'analytics/js/protagonistas.js' %}" defer></script>
+{% endblock %}

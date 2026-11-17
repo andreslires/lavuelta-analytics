@@ -152,3 +152,119 @@ def chart_geo_ediciones(geo):
         yaxis=dict(title='', showgrid=False, tickfont=dict(color=COLOR_TEXTO), autorange='reversed'),
     )
     return _to_html(fig)
+
+
+def chart_ciclista_general(generales):
+    """Evolución de un ciclista en la clasificación general (posición por año)."""
+    if len(generales) < 2:
+        return ''
+
+    ordenadas = sorted(generales, key=lambda g: g.edicion.year)
+    years = [g.edicion.year for g in ordenadas]
+    posiciones = [g.posicion for g in ordenadas]
+    tiempos = [
+        (g.tiempo or '') if g.posicion == 1 else (g.diferencia or '')
+        for g in ordenadas
+    ]
+    colores = [COLOR_ORO if g.posicion == 1 else COLOR_ROJO for g in ordenadas]
+
+    max_pos = max(posiciones)
+    dtick = 1 if max_pos <= 10 else 5 if max_pos <= 30 else 10 if max_pos <= 100 else 20
+
+    fig = go.Figure(go.Scatter(
+        x=years,
+        y=posiciones,
+        mode='lines+markers',
+        line=dict(color=COLOR_ROJO, width=2),
+        marker=dict(size=11, color=colores, line=dict(width=1, color='#0B0A08')),
+        customdata=tiempos,
+        hovertemplate='%{x}: %{y}º<extra>%{customdata}</extra>',
+    ))
+    chart_layout(fig)
+    fig.update_layout(
+        margin=dict(l=0, r=0, t=20, b=20),
+        xaxis=dict(
+            tickmode='array',
+            tickvals=years,
+            ticktext=[str(y) for y in years],
+            showgrid=False,
+            tickfont=dict(color=COLOR_TEXTO),
+        ),
+        yaxis=dict(
+            autorange='reversed',
+            dtick=dtick,
+            tick0=1,
+            showgrid=True,
+            gridcolor=COLOR_GRID,
+            zeroline=False,
+            tickfont=dict(color=COLOR_TEXTO),
+            automargin=True,
+        ),
+    )
+    return _to_html(fig)
+
+
+def chart_ciclista_tipos(resultados):
+    """Top-10 en etapas por tipo, separando victorias, podios y otros top-10."""
+    if not resultados:
+        return ''
+
+    categorias = ('Victorias', 'Podios', 'Top-10')
+    conteo = {c: {} for c in categorias}
+    total_tipo = {}
+
+    for r in resultados:
+        tipo = r.etapa.tipo or 'Sin tipo'
+        if r.posicion == 1:
+            categoria = 'Victorias'
+        elif r.posicion <= 3:
+            categoria = 'Podios'
+        elif r.posicion <= 10:
+            categoria = 'Top-10'
+        else:
+            continue
+        conteo[categoria][tipo] = conteo[categoria].get(tipo, 0) + 1
+        total_tipo[tipo] = total_tipo.get(tipo, 0) + 1
+
+    tipos = sorted(total_tipo, key=lambda t: (-total_tipo[t], t))
+    if not tipos:
+        return ''
+
+    colores = {'Victorias': COLOR_ORO, 'Podios': COLOR_ROJO, 'Top-10': COLOR_TEXTO}
+    fig = go.Figure()
+    for categoria in categorias:
+        valores = [conteo[categoria].get(t, 0) for t in tipos]
+        if not any(valores):
+            continue
+        fig.add_trace(go.Bar(
+            y=tipos,
+            x=valores,
+            name=categoria,
+            orientation='h',
+            marker_color=colores[categoria],
+            hovertemplate='%{y}: %{x} ' + categoria.lower() + '<extra></extra>',
+        ))
+
+    max_val = max(total_tipo.values())
+    dtick = 1 if max_val <= 10 else 5 if max_val <= 30 else 10
+
+    chart_layout(fig, show_legend=True)
+    fig.update_layout(
+        barmode='stack',
+        margin=dict(l=0, r=0, t=30, b=20),
+        xaxis=dict(
+            title='Etapas',
+            showgrid=True,
+            gridcolor=COLOR_GRID,
+            zeroline=False,
+            tickfont=dict(color=COLOR_TEXTO),
+            dtick=dtick,
+        ),
+        yaxis=dict(
+            title='',
+            showgrid=False,
+            tickfont=dict(color=COLOR_TEXTO),
+            autorange='reversed',
+        ),
+    )
+    return _to_html(fig)

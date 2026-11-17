@@ -157,7 +157,6 @@ class Command(BaseCommand):
 
         fechas = []
         for f in features:
-            numero = int(f['properties']['stage'])
             self._importar_etapa(edicion, f, contador, fechas)
         if fechas:
             edicion.fecha_inicio = min(fechas)

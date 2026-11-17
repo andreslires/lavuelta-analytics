@@ -2,6 +2,7 @@ import csv
 import os
 from django.core.management.base import BaseCommand, CommandError
 from analytics.models import Etapa, Ciclista, Equipo, ResultadoEtapa
+from analytics.services.ciclistas import invalidar_ranking_cache
 
 class Command(BaseCommand):
     help = 'Importa resultados de múltiples etapas desde un archivo CSV maestro'
@@ -66,3 +67,5 @@ class Command(BaseCommand):
                 )
                 count += 1
             self.stdout.write(self.style.SUCCESS(f'Importados {count} resultados para {etapa}'))
+
+        invalidar_ranking_cache()

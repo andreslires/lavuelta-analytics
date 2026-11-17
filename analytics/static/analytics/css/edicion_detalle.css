@@ -12,6 +12,8 @@
   line-height: 1.8;
 }
 .edicion-factual .edicion-factual-strong { color: var(--accent-gold); font-weight: 700; }
+.edicion-factual a.edicion-factual-strong { text-decoration: none; }
+.edicion-factual a.edicion-factual-strong:hover { text-decoration: underline; }
 
 /* Resultados de la edición (GC y maillots, factuales) */
 .ed-resultados {
@@ -44,6 +46,8 @@
   min-width: 0;
 }
 .ed-resultado-rider { color: #fff; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+a.ed-resultado-rider { text-decoration: none; }
+a.ed-resultado-rider:hover { color: var(--accent-gold); }
 .ed-resultado-team { color: var(--text-dim); font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ed-resultado-gap { font-family: 'Barlow', sans-serif; color: var(--accent-gold); white-space: nowrap; }
 
@@ -232,4 +236,15 @@
   .ed-stats-secondary { grid-template-columns: 1fr; }
   .edicion-title { font-size: 2.5rem; }
   .ed-resultados { grid-template-columns: 1fr; }
+}
+/* Distintivo de contrarreloj por equipos */
+.stage-cre {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.05rem 0.4rem;
+  border: 1px solid var(--accent-gold);
+  color: var(--accent-gold);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  vertical-align: middle;
 }

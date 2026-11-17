@@ -14,7 +14,7 @@
         {% if edicion.fecha_inicio %}
         <span>{{ edicion.fecha_inicio|date:"d/m/Y" }} → {{ edicion.fecha_fin|date:"d/m/Y" }}</span><br>
         {% endif %}
-        {% if edicion.ganador %}Ganador: <span class="edicion-factual-strong">{{ edicion.ganador }}</span>{% endif %}
+        {% if edicion.ganador %}Ganador: {% if ganador_id %}<a class="edicion-factual-strong" href="{% url 'ciclista_detalle' ganador_id %}">{{ edicion.ganador }}</a>{% else %}<span class="edicion-factual-strong">{{ edicion.ganador }}</span>{% endif %}{% endif %}
     </p>
     {% endif %}
 </header>
@@ -29,7 +29,7 @@
             <li>
                 <span class="ed-resultado-pos">{{ r.position }}º</span>
                 <span class="ed-resultado-line">
-                    <span class="ed-resultado-rider">{{ r.rider }}</span>
+                    {% if r.ciclista_id %}<a class="ed-resultado-rider" href="{% url 'ciclista_detalle' r.ciclista_id %}">{{ r.rider }}</a>{% else %}<span class="ed-resultado-rider">{{ r.rider }}</span>{% endif %}
                     {% if r.team %}<span class="ed-resultado-team">{{ r.team }}</span>{% endif %}
                 </span>
                 {% if r.time or r.gap %}<span class="ed-resultado-gap">{% if r.time %}{{ r.time }}{% else %}{{ r.gap }}{% endif %}</span>{% endif %}
@@ -46,7 +46,7 @@
             <li>
                 <span class="ed-resultado-pos">{{ m.tipo }}</span>
                 <span class="ed-resultado-line">
-                    <span class="ed-resultado-rider">{{ m.rider }}</span>
+                    {% if m.ciclista_id %}<a class="ed-resultado-rider" href="{% url 'ciclista_detalle' m.ciclista_id %}">{{ m.rider }}</a>{% else %}<span class="ed-resultado-rider">{{ m.rider }}</span>{% endif %}
                     {% if m.team %}<span class="ed-resultado-team">{{ m.team }}</span>{% endif %}
                 </span>
             </li>
@@ -124,7 +124,7 @@
 <div class="stages-grid">
     {% for edata in etapas_data %}
     <div class="stage-card">
-        <h3 class="stage-number">Etapa {{ edata.etapa.numero }}</h3>
+        <h3 class="stage-number">Etapa {{ edata.etapa.numero }}{% if edata.etapa.es_cre %} <span class="stage-cre" title="Contrarreloj por equipos">CRE</span>{% endif %}</h3>
         {% include 'analytics/_tipo_icono.html' with tipo=edata.etapa.tipo %}
         <p class="stage-name" title="{{ edata.etapa.localidad_inicio }}{% if edata.etapa.localidad_fin %} → {{ edata.etapa.localidad_fin }}{% endif %}">{% if edata.etapa.localidad_inicio or edata.etapa.localidad_fin %}{{ edata.etapa.localidad_inicio }}{% if edata.etapa.localidad_fin %} → {{ edata.etapa.localidad_fin }}{% endif %}{% else %}{{ edata.etapa.nombre }}{% endif %}</p>
         <div class="stage-meta">

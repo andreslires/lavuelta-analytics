@@ -1,0 +1,209 @@
+{% extends 'analytics/base.html' %}
+{% load static %}
+{% block title %}{{ ciclista.nombre }} · La Vuelta Analytics{% endblock %}
+{% block description %}Historial de {{ ciclista.nombre }} en La Vuelta a España: victorias y podios de etapa, clasificación general, trayectoria y equipos.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'analytics/css/edicion_detalle.css' %}">
+<link rel="stylesheet" href="{% static 'analytics/css/protagonistas.css' %}">
+{% endblock %}
+
+{% block content %}
+<header class="edicion-header">
+    <h1 class="edicion-title">{{ ciclista.nombre }}</h1>
+</header>
+
+{% if ficha.resultados or ficha.generales %}
+<section class="ed-stats-section">
+    <h2 class="ed-section-title"><span class="ed-section-index">{{ secciones.resumen }}</span> Resumen</h2>
+
+    <div class="ed-stats-grid">
+        <div class="ed-stat-card">
+            <p class="ed-stat-label">Victorias de etapa</p>
+            <p class="ed-stat-value">{{ ficha.victorias|length }}</p>
+        </div>
+        <div class="ed-stat-card">
+            <p class="ed-stat-label">Podios de etapa</p>
+            <p class="ed-stat-value">{{ ficha.podios_total }}</p>
+        </div>
+        <div class="ed-stat-card">
+            <p class="ed-stat-label">Mejor general</p>
+            <p class="ed-stat-value">
+                {% if ficha.mejor_general %}{{ ficha.mejor_general }}º{% if ficha.mejor_general_anio %}<span class="unit">{{ ficha.mejor_general_anio }}</span>{% endif %}{% else %}—{% endif %}
+            </p>
+        </div>
+        <div class="ed-stat-card">
+            <p class="ed-stat-label">Ediciones disputadas</p>
+            <p class="ed-stat-value">{{ ficha.participaciones }}</p>
+        </div>
+    </div>
+
+    <div class="cic-summary-grid{% if not tipos_chart_html %} cic-summary-grid--single{% endif %}">
+        <div class="ed-resultado-panel cic-balance-panel">
+            <p class="ed-stat-item-label">Balance en La Vuelta</p>
+            <table class="cic-balance-table">
+                <thead>
+                    <tr>
+                        <th>Resultado</th>
+                        <th>Etapas</th>
+                        <th>General</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Victorias</th>
+                        <td>{{ ficha.victorias|length }}</td>
+                        <td>{{ ficha.victorias_general }}</td>
+                    </tr>
+                    <tr>
+                        <th>Podios</th>
+                        <td>{{ ficha.podios_total }}</td>
+                        <td>{{ ficha.podios_general }}</td>
+                    </tr>
+                    <tr>
+                        <th>Top-10</th>
+                        <td>{{ ficha.top10 }}</td>
+                        <td>{{ ficha.top10_general }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="cic-summary-note">
+                {% if ficha.mejor_resultado %}Mejor puesto en etapa: {{ ficha.mejor_resultado }}º{% endif %}
+                {% if ficha.mejor_general %} · Mejor general: {{ ficha.mejor_general }}º ({{ ficha.mejor_general_anio }}){% endif %}
+            </p>
+        </div>
+
+        {% if tipos_chart_html %}
+        <div class="ed-chart cic-chart-panel">
+            <p class="ed-stat-item-label">Top-10 en etapas por tipo</p>
+            <div class="chart-body">{{ tipos_chart_html|safe }}</div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% if ficha.generales %}
+<section class="ed-stats-section">
+    <h2 class="ed-section-title"><span class="ed-section-index">{{ secciones.general }}</span> Clasificación general</h2>
+
+    {% if general_chart_html %}
+    <div class="ed-chart ed-chart-wide cic-chart-panel">
+        <p class="ed-stat-item-label">Evolución de la posición en la general</p>
+        <div class="chart-body">{{ general_chart_html|safe }}</div>
+    </div>
+    {% endif %}
+
+    <div class="proto-table-wrap">
+        <table class="proto-table">
+            <thead>
+                <tr>
+                    <th>Año</th>
+                    <th class="num">Posición</th>
+                    <th>Equipo</th>
+                    <th class="num">Tiempo / diferencia</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for g in ficha.generales %}
+                <tr>
+                    <td><a class="cic-link" href="{% url 'edicion_detalle' g.edicion.year %}">La Vuelta {{ g.edicion.year }}</a></td>
+                    <td class="num {% if g.posicion == 1 %}cic-pos-win{% elif g.posicion <= 3 %}cic-pos-podium{% endif %}">{{ g.posicion }}º</td>
+                    <td>{% if g.equipo %}{{ g.equipo.nombre }}{% else %}—{% endif %}</td>
+                    <td class="num">{% if g.posicion == 1 %}{{ g.tiempo|default:"—" }}{% else %}{{ g.diferencia|default:"—" }}{% endif %}</td>
+                    <td class="proto-accion"><a class="proto-btn" href="{% url 'edicion_detalle' g.edicion.year %}">Ver edición</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endif %}
+
+{% if ficha.podios_todos %}
+<section class="ed-stats-section">
+    <h2 class="ed-section-title"><span class="ed-section-index">{{ secciones.etapas }}</span> Podios en etapas</h2>
+    <div class="proto-table-wrap">
+        <table class="proto-table">
+            <thead>
+                <tr>
+                    <th>Año</th>
+                    <th>Etapa</th>
+                    <th>Recorrido</th>
+                    <th>Tipo</th>
+                    <th class="num">Pos.</th>
+                    <th class="num">Tiempo / diferencia</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in ficha.podios_todos %}
+                <tr{% if r.posicion == 1 %} class="cic-row-win"{% endif %}>
+                    <td>{{ r.etapa.edicion.year }}</td>
+                    <td><a class="cic-link" href="{% url 'etapa_detalle' r.etapa.edicion.year r.etapa.numero %}">Etapa {{ r.etapa.numero }}</a></td>
+                    <td>
+                        {% if r.etapa.localidad_inicio or r.etapa.localidad_fin %}
+                            {{ r.etapa.localidad_inicio }}{% if r.etapa.localidad_fin %} → {{ r.etapa.localidad_fin }}{% endif %}
+                        {% else %}
+                            {{ r.etapa.nombre }}
+                        {% endif %}
+                    </td>
+                    <td>{{ r.etapa.tipo }}</td>
+                    <td class="num {% if r.posicion == 1 %}cic-pos-win{% elif r.posicion <= 3 %}cic-pos-podium{% endif %}">{{ r.posicion }}º</td>
+                    <td class="num">{% if r.posicion == 1 %}{{ r.tiempo|default:"—" }}{% else %}{{ r.diferencia|default:"—" }}{% endif %}</td>
+                    <td class="proto-accion"><a class="proto-btn" href="{% url 'etapa_detalle' r.etapa.edicion.year r.etapa.numero %}">Ver etapa</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endif %}
+
+<section class="ed-stats-section">
+    <h2 class="ed-section-title"><span class="ed-section-index">{{ secciones.trayectoria }}</span> Trayectoria por año</h2>
+    <div class="proto-table-wrap">
+        <table class="proto-table">
+            <thead>
+                <tr>
+                    <th>Año</th>
+                    <th>Equipo</th>
+                    <th class="num">General</th>
+                    <th class="num">Victorias</th>
+                    <th class="num">Podios</th>
+                    <th class="num">Top-10</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fila in ficha.por_anio %}
+                <tr>
+                    <td><a class="cic-link" href="{% url 'edicion_detalle' fila.year %}">La Vuelta {{ fila.year }}</a></td>
+                    <td>{% if fila.equipos_txt %}{{ fila.equipos_txt }}{% else %}—{% endif %}</td>
+                    <td class="num {% if fila.general_posicion == 1 %}cic-pos-win{% elif fila.general_posicion and fila.general_posicion <= 3 %}cic-pos-podium{% endif %}">{% if fila.general_posicion %}{{ fila.general_posicion }}º{% else %}—{% endif %}</td>
+                    <td class="num">{{ fila.victorias }}</td>
+                    <td class="num">{{ fila.podios }}</td>
+                    <td class="num">{{ fila.top10 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if ficha.equipos %}
+    <div class="cic-team-panel">
+        <p class="ed-stat-item-label">Equipos</p>
+        <ul class="cic-team-list">
+            {% for equipo in ficha.equipos %}
+            <li>
+                <strong>{{ equipo.nombre }}</strong>
+                <span>{{ equipo.y0 }}{% if equipo.y1 != equipo.y0 %}–{{ equipo.y1 }}{% endif %}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</section>
+{% else %}
+<p class="proto-empty">Este ciclista todavía no tiene resultados registrados.</p>
+{% endif %}
+{% endblock %}

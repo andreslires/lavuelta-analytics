@@ -13,9 +13,9 @@
 
 <!-- ---------- Tabs ---------- -->
 <div class="comp-tabs" role="tablist">
-    <a class="comp-tab {% if tab == 'ediciones' %}is-active{% endif %}" href="{% url 'comparar' %}?tab=ediciones" role="tab">Ediciones</a>
-    <a class="comp-tab {% if tab == 'perfiles' %}is-active{% endif %}" href="{% url 'comparar' %}?tab=perfiles" role="tab">Etapas similares</a>
-    <a class="comp-tab {% if tab == 'zonas' %}is-active{% endif %}" href="{% url 'comparar' %}?tab=zonas" role="tab">Recorrido común</a>
+    <a class="comp-tab {% if tab == 'ediciones' %}is-active{% endif %}" href="{% if static_export %}/comparar/ediciones/{% else %}{% url 'comparar' %}?tab=ediciones{% endif %}" role="tab">Ediciones</a>
+    <a class="comp-tab {% if tab == 'perfiles' %}is-active{% endif %}" href="{% if static_export %}/comparar/similares/{% else %}{% url 'comparar' %}?tab=perfiles{% endif %}" role="tab">Etapas similares</a>
+    <a class="comp-tab {% if tab == 'zonas' %}is-active{% endif %}" href="{% if static_export %}/comparar/zonas/{% else %}{% url 'comparar' %}?tab=zonas{% endif %}" role="tab">Recorrido común</a>
 </div>
 
 {% if not tab %}
@@ -53,6 +53,7 @@
         </div>
         <button type="submit" class="comp-go">Comparar</button>
     </form>
+    {% if static_export %}<p class="perfil-hint" id="comp-ed-hint" style="display:none">Elige dos ediciones distintas.</p>{% endif %}
 
     <!-- KPIs enfrentados -->
     {% if ed_a %}
@@ -202,7 +203,7 @@
 <!-- ================= TAB PERFILES SIMILARES ================= -->
 <section class="comp-panel {% if tab == 'perfiles' %}is-active{% endif %}" data-panel="similares">
 
-    <p class="perfil-tip">Puedes elegir una etapa y buscar las más parecidas, o elegir dos etapas y compararlas entre sí.</p>
+    <p class="perfil-tip">{% if static_export %}Elige una etapa y verás las más parecidas según distancia, desnivel, puertos, pendiente y forma del perfil.{% else %}Puedes elegir una etapa y buscar las más parecidas, o elegir dos etapas y compararlas entre sí.{% endif %}</p>
 
     <form method="get" action="{% url 'comparar' %}" class="comp-selector perfil-toolbar" id="perfil-form">
         <input type="hidden" name="tab" value="perfiles">
@@ -229,10 +230,11 @@
 
         <button type="submit" class="comp-go" name="accion"
                 value="{% if perfil_e2 %}comparar{% else %}similares{% endif %}"
+                {% if static_export %}style="display:none"{% endif %}
                 id="pf-submit">{% if perfil_e2 %}Comparar{% else %}Buscar similares{% endif %}</button>
         </div>
 
-        <button type="button" class="comp-add" id="pf-add"
+        <button type="button" class="comp-add" id="pf-add"{% if static_export %} style="display:none"{% endif %}
                 aria-expanded="{% if perfil_e2 %}true{% else %}false{% endif %}"
                 data-off="Añadir etapa 2"
                 data-on="Quitar etapa 2"
@@ -265,12 +267,16 @@
     </form>
 
     {% include 'analytics/_perfiles_resultado.html' %}
+    {% if static_export and tab == 'perfiles' %}
+    <div id="static-similares"></div>
+    {{ similares_estaticos|json_script:"similares-data" }}
+    {% endif %}
 </section>
 
 <!-- ================= TAB ZONAS COMUNES ================= -->
 <section class="comp-panel {% if tab == 'zonas' %}is-active{% endif %}" data-panel="zonas">
 
-    <p class="perfil-tip">Elige una etapa y te enseñamos las etapas que comparten carreteras con ella, en cualquier edición.</p>
+    <p class="perfil-tip">Elige una etapa y te enseñamos las etapas que comparten carreteras con ella, en cualquier edición.{% if static_export %} En esta versión no se muestran los mapas del tramo compartido.{% endif %}</p>
 
     <form method="get" action="{% url 'comparar' %}" class="comp-selector perfil-toolbar" id="zona-form">
         <input type="hidden" name="tab" value="zonas">
@@ -293,7 +299,7 @@
                 </select>
             </div>
         </div>
-        <button type="submit" class="comp-go" name="accion" value="zonas">Buscar tramos</button>
+        <button type="submit" class="comp-go" name="accion" value="zonas"{% if static_export %} style="display:none"{% endif %}>Buscar tramos</button>
         </div>
     </form>
 
@@ -327,11 +333,14 @@
     <p class="perfil-hint">Ninguna otra etapa comparte carreteras con esta (recorrido único).</p>
     {% endif %}
     {% endif %}
+    {% if static_export and tab == 'zonas' %}
+    <div id="static-zonas"></div>
+    {{ zonas_estaticas|json_script:"zonas-data" }}
+    {% endif %}
 </section>
 {% endblock %}
 
 {% block extra_js %}
-{% if not static_export %}
 <script>
 (function(){
     // --- Selector en cascada de etapas: año → etapas de ese año ---
@@ -366,6 +375,93 @@
     initCascade('pf_b_year', 'pf_b');
     initCascade('zona_year', 'zona_st');
 
+{% if static_export %}
+    // --- Versión estática: sin servidor, todo sale de páginas y datos precalculados ---
+    var ancla = document.querySelector('.comp-tab');
+    var BASE = ancla ? new URL(ancla.href, location.href).pathname.replace(/comparar\/ediciones\/$/, '') : '/';
+
+    // Ediciones: lleva a la pareja ya generada (siempre de menor a mayor año).
+    var formEd = document.querySelector('[data-panel="ediciones"] form');
+    if (formEd) {
+        formEd.addEventListener('submit', function (ev) {
+            ev.preventDefault();
+            var a = parseInt(document.getElementById('id_a').value, 10);
+            var b = parseInt(document.getElementById('id_b').value, 10);
+            var hint = document.getElementById('comp-ed-hint');
+            if (!a || !b || a === b) { if (hint) hint.style.display = ''; return; }
+            if (a > b) { var tmp = a; a = b; b = tmp; }
+            window.location.href = BASE + 'comparar/' + a + '-' + b + '/';
+        });
+    }
+
+    function span(clase, texto) {
+        var s = document.createElement('span');
+        s.className = clase;
+        s.textContent = texto;
+        return s;
+    }
+    function fila(year, numero, izquierda, tipo, km, desnivel, inicio, fin) {
+        var a = document.createElement('a');
+        a.className = 'perfil-row';
+        a.href = BASE + 'etapa/' + year + '/' + numero + '/';
+        var etiqueta = span('perfil-row-label', year + ' · Etapa ' + numero);
+        if (inicio || fin) {
+            etiqueta.appendChild(span('sim-route', inicio + (fin ? ' → ' + fin : '')));
+        }
+        a.appendChild(span('perfil-row-sim', izquierda));
+        a.appendChild(etiqueta);
+        a.appendChild(span('perfil-row-meta', tipo + ' · ' + km + ' km · ' + desnivel + ' m+'));
+        return a;
+    }
+    function iniciarLista(selId, datosId, contId, construir, vacio) {
+        var sel = document.getElementById(selId);
+        var elDatos = document.getElementById(datosId);
+        var cont = document.getElementById(contId);
+        if (!sel || !elDatos || !cont) return;
+        var datos = JSON.parse(elDatos.textContent);
+        function pintar() {
+            cont.innerHTML = '';
+            var lista = datos[sel.value];
+            if (!sel.value || !lista) return;
+            var ref = null;
+            for (var i = 0; i < ETAPAS.length; i++) {
+                if (String(ETAPAS[i].id) === String(sel.value)) { ref = ETAPAS[i]; break; }
+            }
+            var h = document.createElement('h3');
+            h.className = 'perfil-one-title';
+            h.appendChild(document.createTextNode(construir.titulo + ' '));
+            if (ref) h.appendChild(span('perfil-accent', ref.year + ' · Etapa ' + ref.number));
+            cont.appendChild(h);
+            if (!lista.length) {
+                var p = document.createElement('p');
+                p.className = 'perfil-hint';
+                p.textContent = vacio;
+                cont.appendChild(p);
+                return;
+            }
+            var filas = document.createElement('div');
+            filas.className = 'perfil-rows zona-rows';
+            lista.forEach(function (d, idx) { filas.appendChild(construir.fila(d, idx)); });
+            cont.appendChild(filas);
+        }
+        sel.addEventListener('change', pintar);
+        pintar();
+    }
+    iniciarLista('pf_a', 'similares-data', 'static-similares', {
+        titulo: 'Etapas más parecidas a',
+        // [año, nº, %, tipo, km, desnivel, inicio, fin]
+        fila: function (d, idx) {
+            return fila(d[0], d[1], (idx + 1) + ' · ' + d[2] + '%', d[3], d[4], d[5], d[6], d[7]);
+        }
+    }, 'No hay etapas parecidas calculadas para esta etapa.');
+    iniciarLista('zona_st', 'zonas-data', 'static-zonas', {
+        titulo: 'Etapas que comparten recorrido con',
+        // [año, nº, km en común, %, tipo, km, desnivel, inicio, fin]
+        fila: function (d) {
+            return fila(d[0], d[1], d[2].toFixed(1).replace('.', ',') + ' km · ' + d[3] + '%', d[4], d[5], d[6], d[7], d[8]);
+        }
+    }, 'Ninguna otra etapa comparte carreteras con esta (recorrido único).');
+{% else %}
     // Botón "Añadir etapa 2": muestra/oculta la segunda etapa.
     // Al abrir, el botón pasa a estar junto al selector 2 (a su derecha) de
     // forma discreta (solo el icono ×); al cerrar vuelve debajo del selector 1.
@@ -487,7 +583,7 @@
             }
         });
     });
+{% endif %}
 })();
 </script>
-{% endif %}
 {% endblock %}

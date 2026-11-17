@@ -1,5 +1,6 @@
 # Vistas: cada función recibe un request y devuelve HTML. Las gráficas y el
 # análisis geográfico se delegan en analytics/services/.
+from django.conf import settings
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.utils.html import escape
@@ -10,7 +11,11 @@ import json
 import plotly.graph_objects as go
 from shapely.wkt import loads
 
-from analytics.models import Edicion, Etapa
+from analytics.models import Ciclista, ClasificacionGeneral, Edicion, Etapa
+from .services.ciclistas import (
+    ficha as ficha_ciclista,
+    ranking as ranking_ciclistas,
+)
 from .services.gpx_processor import GPXProcessor
 from .services.charts import (
     COLOR_GRID,
@@ -18,6 +23,8 @@ from .services.charts import (
     COLOR_ROJO,
     COLOR_TEXTO,
     build_charts,
+    chart_ciclista_general,
+    chart_ciclista_tipos,
     chart_geo_ediciones,
     chart_layout,
     color_edicion,
@@ -37,6 +44,7 @@ from .services.geografia import (
 )
 from .services.perfiles_similares import (
     etapas_similares,
+    similares_resumen,
     indice_similitud,
     metricas,
     perfil_etapa_html,
@@ -115,10 +123,14 @@ def dashboard(request):
 
     charts = build_charts(ediciones)
 
+    # Franja de ciclistas bajo los KPIs: total y líder de victorias (ranking cacheado).
+    ranking_lista = ranking_ciclistas()
+    ciclistas_total = len(ranking_lista)
+    ciclista_lider = ranking_lista[0] if ranking_lista and ranking_lista[0].victorias else None
+
     # --- Geografía global: etapas por comunidad autónoma ---
     geo_res = geografia_global()
     geo = geo_res['geo']
-    geo_total = sum(g['etapas'] for g in geo)
     geo_comunidades = len(geo)
     geo_top = geo[0] if geo else None
     geo_fuera = geo_res['fuera']
@@ -157,6 +169,8 @@ def dashboard(request):
         'total_desnivel': total_desnivel,
         'total_etapas': total_etapas,
         'total_ediciones': total_ediciones,
+        'ciclistas_total': ciclistas_total,
+        'ciclista_lider': ciclista_lider,
         'geo': geo,
         'geo_comunidades': geo_comunidades,
         'geo_top': geo_top,
@@ -185,15 +199,40 @@ def edicion_detalle(request, year):
     edicion = get_object_or_404(Edicion, year=year)
     etapas = list(edicion.etapas.all().order_by('numero'))
 
-    # Datos factuales de la edición (importados por el comando de importación).
-    try:
-        gc = json.loads(edicion.gc_json or '[]')
-    except (ValueError, TypeError):
-        gc = []
+    # Datos factuales de la edición: ClasificacionGeneral con fallback a gc_json.
+    gc_db = list(
+        ClasificacionGeneral.objects.filter(edicion=edicion)
+        .select_related('ciclista', 'equipo')
+        .order_by('posicion')[:5]
+    )
+    ids_ciclistas = dict(Ciclista.objects.values_list('nombre', 'pk'))
+    if gc_db:
+        gc_top = [
+            {
+                'position': r.posicion,
+                'rider': r.ciclista.nombre,
+                'team': r.equipo.nombre if r.equipo else '',
+                'time': r.tiempo,
+                'gap': r.diferencia,
+                'ciclista_id': r.ciclista_id,
+            }
+            for r in gc_db
+        ]
+    else:
+        try:
+            gc = json.loads(edicion.gc_json or '[]')
+        except (ValueError, TypeError):
+            gc = []
+        for r in gc:
+            r['ciclista_id'] = ids_ciclistas.get(r.get('rider', ''))
+        gc_top = gc[:5]
+
     try:
         maillots = json.loads(edicion.maillots_json or '{}')
     except (ValueError, TypeError):
         maillots = {}
+
+    ganador_id = ids_ciclistas.get(edicion.ganador) if edicion.ganador else None
 
     TIPOS_MAILLOT = {
         'points': 'Puntos',
@@ -204,10 +243,12 @@ def edicion_detalle(request, year):
     for tipo, m in maillots.items():
         if not isinstance(m, dict) or not m.get('rider'):
             continue
+        rider = m.get('rider', '')
         maillots_list.append({
             'tipo': TIPOS_MAILLOT.get(str(tipo).lower(), str(tipo).replace('_', ' ').capitalize()),
-            'rider': m.get('rider', ''),
+            'rider': rider,
             'team': m.get('team') or '',
+            'ciclista_id': ids_ciclistas.get(rider),
         })
 
     n = len(etapas)
@@ -299,9 +340,10 @@ def edicion_detalle(request, year):
         'desnivel_chart_html': desnivel_chart_html,
         'distancia_chart_html': distancia_chart_html,
         'tipos_chart_html': tipos_chart_html,
-        'gc_top': gc[:5],
+        'gc_top': gc_top,
         'maillots': maillots,
         'maillots_list': maillots_list,
+        'ganador_id': ganador_id,
     })
 
 
@@ -378,7 +420,17 @@ def etapa_detalle(request, year, numero):
         else 'analytics/etapa_detalle.html'
     )
     # Cargamos resultados de la nueva tabla relacional
-    resultados = etapa.resultados_db.all().order_by('posicion')
+    resultados = etapa.resultados_db.select_related('ciclista', 'equipo').order_by('posicion')
+    # Las CRE/TTT se resuelven por equipos, no por corredores.
+    resultados_equipo = (
+        list(etapa.resultados_equipo.select_related('equipo').order_by('posicion'))
+        if etapa.es_cre else []
+    )
+    # Enlace del ganador textual (etapas sin resultados detallados) a su ficha.
+    ganador_ciclista = (
+        Ciclista.objects.filter(nombre=etapa.ganador).first()
+        if etapa.ganador else None
+    )
     return render(request, template, {
         'etapa': etapa,
         'map_html': map_html,
@@ -387,6 +439,9 @@ def etapa_detalle(request, year, numero):
         'next_etapa': next_etapa,
         # Resultado de la etapa (podio, factual)
         'resultados': resultados,
+        'resultados_equipo': resultados_equipo,
+        'similares': similares_resumen(etapa),
+        'ganador_ciclista': ganador_ciclista,
         # Métricas del terreno (precalculadas en BD)
         'altitud_max': etapa.altitud_max,
         'altitud_min': etapa.altitud_min,
@@ -423,9 +478,14 @@ def _marcadores_inicio_meta(mapa, inicio, meta):
 
 def _mapa_plot_gpx(etapa):
     """Mapa + perfil de una etapa con archivo GPX local (procesado en caché)."""
-    # Cargar datos reales (cacheados por archivo GPX)
+    # Cargar datos reales (cacheados por archivo GPX). Si la entrada está
+    # corrupta o fue serializada con otra versión de pandas, se regenera.
     cache_key = f'gpx_data_{etapa.file_path}'
-    data = cache.get(cache_key)
+    try:
+        data = cache.get(cache_key)
+    except Exception:
+        cache.delete(cache_key)
+        data = None
     if data is None:
         processor = GPXProcessor(etapa.file_path)
         data = processor.process()
@@ -527,6 +587,36 @@ def _mapa_html_cached(key, builder):
         html = builder()._repr_html_()
         cache.set(key, html, timeout=None)
     return html
+
+
+def _similares_estaticos(etapas):
+    """{id de etapa: [[año, nº, %, tipo, km, desnivel, inicio, fin], ...]}.
+
+    Datos de la pestaña "Etapas similares" en la versión estática, donde no hay
+    servidor: el navegador los lee de un JSON incrustado en la página.
+    """
+    return {
+        e.id: [
+            [s['year'], s['numero'], s['pct'], s['tipo'], round(s['distancia']),
+             round(s['desnivel']), s['inicio'], s['fin']]
+            for s in similares_resumen(e)
+        ]
+        for e in etapas
+    }
+
+
+def _zonas_estaticas(etapas):
+    """{id de etapa: [[año, nº, km comunes, %, tipo, km, desnivel, inicio, fin], ...]}."""
+    datos = {}
+    for e in etapas:
+        datos[e.id] = [
+            [r['etapa'].edicion.year, r['etapa'].numero, round(r['km'], 1),
+             round(r['pct']), r['etapa'].tipo, round(r['etapa'].distancia),
+             round(r['etapa'].desnivel), r['etapa'].localidad_inicio,
+             r['etapa'].localidad_fin]
+            for r in tramos_comunes(e)[:12]
+        ]
+    return datos
 
 
 def comparar(request):
@@ -734,6 +824,15 @@ def comparar(request):
         zona['zona_e'] = ze
         zona['zona_tramos'] = tramos_comunes(ze)[:12]
 
+    # Versión estática: sin servidor, las pestañas de etapas se resuelven en el
+    # navegador con datos precalculados incrustados en la página.
+    datos_estaticos = {}
+    if getattr(settings, 'STATIC_EXPORT', False):
+        if tab == 'perfiles':
+            datos_estaticos['similares_estaticos'] = _similares_estaticos(todas_etapas)
+        elif tab == 'zonas':
+            datos_estaticos['zonas_estaticas'] = _zonas_estaticas(todas_etapas)
+
     context = {
         'todas': todas,
         'a': a,
@@ -757,6 +856,7 @@ def comparar(request):
         'tab': tab,
         **perfiles,
         **zona,
+        **datos_estaticos,
     }
     # Comparación de perfiles "in-situ": si llega una petición AJAX y hay dos
     # etapas elegidas, se devuelve solo el bloque de resultados para que la
@@ -771,6 +871,41 @@ def comparar(request):
         }
         return render(request, 'analytics/_perfiles_resultado.html', resultado)
     return render(request, 'analytics/comparador.html', context)
+
+
+def ciclistas(request):
+    """Directorio-ranking de ciclistas: tabla ordenable y buscador en cliente."""
+    lista = list(ranking_ciclistas())
+    return render(request, 'analytics/ciclistas.html', {
+        'ciclistas': lista,
+        'total': len(lista),
+    })
+
+
+def ciclista_detalle(request, pk):
+    """Ficha histórica de un ciclista: resumen, general, etapas y trayectoria."""
+    ciclista = get_object_or_404(Ciclista, pk=pk)
+    datos = ficha_ciclista(ciclista)
+
+    # Índices de sección consecutivos aunque alguna sección esté vacía.
+    numero = 1
+    secciones = {'resumen': '01'}
+    if datos['generales']:
+        numero += 1
+        secciones['general'] = f'{numero:02d}'
+    if datos['podios_todos']:
+        numero += 1
+        secciones['etapas'] = f'{numero:02d}'
+    numero += 1
+    secciones['trayectoria'] = f'{numero:02d}'
+
+    return render(request, 'analytics/ciclista_detalle.html', {
+        'ciclista': ciclista,
+        'ficha': datos,
+        'secciones': secciones,
+        'general_chart_html': chart_ciclista_general(datos['generales']),
+        'tipos_chart_html': chart_ciclista_tipos(datos['resultados']),
+    })
 
 
 def ayuda(request):

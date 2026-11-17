@@ -33,6 +33,13 @@
             <p class="stat-value">{{ total_desnivel|floatformat:0 }} <span class="unit">M</span></p>
         </div>
     </div>
+    <a href="{% url 'ciclistas' %}" class="riders-strip">
+        <span class="riders-strip__item"><strong>{{ ciclistas_total }}</strong> ciclistas</span>
+        {% if ciclista_lider %}
+        <span class="riders-strip__item">Más victorias de etapa: <strong>{{ ciclista_lider.nombre }}</strong> ({{ ciclista_lider.victorias }})</span>
+        {% endif %}
+        <span class="riders-strip__cta">Ver ciclistas →</span>
+    </a>
 </section>
 
 <section class="map-preview-section">

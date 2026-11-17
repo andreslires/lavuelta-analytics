@@ -33,7 +33,8 @@
             <div class="nav-links" id="nav-links">
                 <a href="/" class="nav-link" {% if request.path == '/' %}aria-current="page"{% endif %}>Dashboard</a>
                 <a href="{% url 'mapa_general' %}" class="nav-link" {% if request.path == '/mapa-general/' %}aria-current="page"{% endif %}>Mapa</a>
-                {% if not static_export %}<a href="{% url 'comparar' %}" class="nav-link" {% if request.path == '/comparar/' %}aria-current="page"{% endif %}>Comparar</a>{% endif %}
+                <a href="{% url 'comparar' %}" class="nav-link" {% if '/comparar/' in request.path %}aria-current="page"{% endif %}>Comparar</a>
+                <a href="{% url 'ciclistas' %}" class="nav-link" {% if request.resolver_match.url_name == 'ciclistas' or request.resolver_match.url_name == 'ciclista_detalle' %}aria-current="page"{% endif %}>Ciclistas</a>
                 <div class="dropdown">
                     <button class="nav-link" type="button">Ediciones <svg class="ico ico-caret" aria-hidden="true"><use href="#ix-chevron"/></svg></button>
                     <div class="dropdown-menu">
@@ -61,7 +62,8 @@
                 <ul>
                     <li><a href="/">Dashboard</a></li>
                     <li><a href="{% url 'mapa_general' %}">Mapa</a></li>
-                    {% if not static_export %}<li><a href="{% url 'comparar' %}">Comparar</a></li>{% endif %}
+                    <li><a href="{% url 'ciclistas' %}">Ciclistas</a></li>
+                    <li><a href="{% url 'comparar' %}">Comparar</a></li>
                 </ul>
             </div>
             <div class="footer-col contact">

@@ -1,0 +1,470 @@
+/* protagonistas.css - Directorio, ranking y ficha de ciclistas. */
+
+/* ---------- Cabecera (mismo estilo que mapa y comparador) ---------- */
+.proto-header { margin-bottom: 2rem; }
+
+.proto-eyebrow {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+  margin-bottom: 1rem;
+}
+
+.proto-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 2.25rem;
+  color: #fff;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+.proto-subtitle {
+  color: var(--text-dim);
+  margin-top: 0.5rem;
+}
+
+/* ---------- Barra de búsqueda destacada ---------- */
+.proto-search-row { margin-bottom: 1.6rem; }
+
+.proto-search-box { position: relative; }
+
+.proto-search-box .ico {
+  position: absolute;
+  top: 50%;
+  left: 1rem;
+  transform: translateY(-50%);
+  color: var(--text-faint);
+  font-size: 1.15rem;
+  pointer-events: none;
+}
+
+.proto-search {
+  width: 100%;
+  height: 3.25rem;
+  background: #0f0b0c;
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  padding: 0 1rem 0 3rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 1.05rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.proto-search:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.proto-search::placeholder { color: var(--text-faint); }
+
+.proto-search::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.15rem;
+  background-color: var(--text-faint);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M18.3 5.7a1 1 0 0 0-1.4 0L12 10.6 7.1 5.7a1 1 0 0 0-1.4 1.4l4.9 4.9-4.9 4.9a1 1 0 1 0 1.4 1.4l4.9-4.9 4.9 4.9a1 1 0 0 0 1.4-1.4L13.4 12l4.9-4.9a1 1 0 0 0 0-1.4z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M18.3 5.7a1 1 0 0 0-1.4 0L12 10.6 7.1 5.7a1 1 0 0 0-1.4 1.4l4.9 4.9-4.9 4.9a1 1 0 1 0 1.4 1.4l4.9-4.9 4.9 4.9a1 1 0 0 0 1.4-1.4L13.4 12l4.9-4.9a1 1 0 0 0 0-1.4z'/%3E%3C/svg%3E") center / contain no-repeat;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: background-color 0.15s, opacity 0.15s;
+}
+.proto-search::-webkit-search-cancel-button:hover {
+  background-color: var(--accent-gold);
+  opacity: 1;
+}
+
+/* ---------- Controles: búsqueda, ámbito y orden ---------- */
+.proto-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.proto-controls .proto-scope-btn {
+  height: 3.25rem;
+  padding: 0 1rem;
+}
+
+.proto-sort {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.proto-select-wrap { position: relative; }
+
+.proto-select {
+  appearance: none;
+  height: 3.25rem;
+  min-width: 10.5rem;
+  background: #0f0b0c;
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  padding: 0 2.4rem 0 1rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.proto-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.proto-select option {
+  background: var(--panel);
+  color: var(--text);
+}
+
+.proto-select-ico {
+  position: absolute;
+  top: 50%;
+  right: 0.8rem;
+  width: 0.8rem;
+  height: 0.8rem;
+  transform: translateY(-50%);
+  color: var(--text-faint);
+  pointer-events: none;
+}
+
+/* ---------- Barra de orden ---------- */
+.proto-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.proto-toolbar-label {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-faint);
+}
+
+.proto-toggle { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.proto-alpha { display: flex; margin-left: auto; }
+
+.proto-toggle-btn {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text-dim);
+  padding: 0.5rem 0.85rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.proto-toggle-btn:hover { border-color: var(--accent); color: #fff; }
+.proto-toggle-btn.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* Selector de ámbito: etapa o general */
+.proto-scope {
+  display: inline-flex;
+  border: 1px solid var(--border-strong);
+}
+
+.proto-scope-btn {
+  background: transparent;
+  border: 0;
+  border-right: 1px solid var(--border-strong);
+  color: var(--text-dim);
+  padding: 0.5rem 0.85rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.proto-scope-btn:last-child { border-right: 0; }
+.proto-scope-btn:hover { color: #fff; background: rgba(227, 21, 43, 0.12); }
+.proto-scope-btn.is-active {
+  background: var(--accent-gold);
+  color: #0B0A08;
+}
+
+/* ---------- Tabla de directorio / ranking ---------- */
+.proto-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  background: var(--panel-soft);
+}
+
+.proto-table {
+  width: 100%;
+  min-width: 40rem;
+  border-collapse: collapse;
+}
+
+.proto-table th {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  text-align: left;
+  font-weight: 700;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--border-strong);
+  white-space: nowrap;
+}
+
+.proto-table th.proto-group {
+  color: var(--accent-gold);
+  text-align: center;
+}
+
+.proto-table .cic-group-start { border-left: 1px solid var(--border-strong); }
+
+.proto-table td {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.92rem;
+  color: var(--text-dim);
+}
+.proto-table tbody tr:last-child td { border-bottom: none; }
+.proto-table tbody tr:hover td { background: rgba(227, 21, 43, 0.06); }
+
+.proto-table .num {
+  text-align: right;
+  font-family: 'Barlow', sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.proto-table th.num { text-align: right; }
+
+.cic-stat-cell {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-faint);
+}
+.cic-stat-cell.is-positive {
+  color: var(--accent-gold);
+  font-weight: 700;
+}
+
+.proto-nombre {
+  display: block;
+  color: #fff;
+  font-weight: 600;
+}
+
+.proto-accion {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.proto-btn {
+  display: inline-block;
+  border: 1px solid var(--border-strong);
+  padding: 0.45rem 1rem;
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.proto-btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* Filas de la ficha con botón de acción a la derecha */
+.ed-resultado-list--accion li {
+  grid-template-columns: 5.5rem 1fr auto auto;
+  align-items: center;
+}
+.ed-resultado-list--accion .proto-btn {
+  grid-column: -2 / -1;
+  justify-self: end;
+}
+
+.proto-years {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.72rem;
+  color: var(--text-faint);
+}
+
+.proto-accent { color: var(--accent-gold); font-weight: 700; }
+.proto-team { color: var(--text-dim); font-size: 0.8rem; }
+
+.proto-rank {
+  width: 3rem;
+  color: var(--text-faint);
+  font-family: 'Barlow', sans-serif;
+}
+
+.proto-empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-faint);
+}
+
+/* ---------- Ficha de ciclista ---------- */
+.cic-summary-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: 1.5rem;
+  align-items: stretch;
+}
+.cic-summary-grid--single { grid-template-columns: 1fr; }
+
+.cic-balance-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-top: 2px solid var(--accent-gold);
+}
+
+.cic-balance-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.75rem;
+}
+
+.cic-balance-table th,
+.cic-balance-table td {
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--border);
+  font-family: 'Barlow', sans-serif;
+}
+
+.cic-balance-table thead th {
+  color: var(--text-faint);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: right;
+}
+.cic-balance-table thead th:first-child { text-align: left; }
+
+.cic-balance-table tbody th {
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.cic-balance-table tbody td {
+  color: #fff;
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.cic-balance-table tbody tr:last-child th,
+.cic-balance-table tbody tr:last-child td { border-bottom: none; }
+
+.cic-summary-note {
+  margin-top: 1rem;
+  color: var(--text-faint);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem;
+}
+
+.cic-chart-panel .chart-body { height: 17rem; }
+.ed-stats-section > .cic-chart-panel { margin-bottom: 2rem; }
+
+.cic-link {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+}
+.cic-link:hover { color: var(--accent-gold); }
+
+.proto-table td.cic-pos-win {
+  color: var(--accent-gold);
+  font-weight: 700;
+}
+.proto-table td.cic-pos-podium {
+  color: #fff;
+  font-weight: 700;
+}
+
+.proto-table tbody tr.cic-row-win td { background: rgba(245, 166, 35, 0.06); }
+.proto-table tbody tr.cic-row-win:hover td { background: rgba(245, 166, 35, 0.11); }
+
+.cic-team-panel {
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-strong);
+}
+
+.cic-team-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cic-team-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.cic-team-list strong {
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.cic-team-list span {
+  color: var(--text-faint);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 1024px) {
+  .cic-summary-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 900px) {
+  .proto-controls { grid-template-columns: 1fr; }
+  .proto-sort { justify-content: space-between; }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 640px) {
+  .proto-table .col-top10,
+  .proto-table .col-part,
+  .proto-table .col-team { display: none; }
+
+  .ed-resultado-list--accion li { grid-template-columns: 4.5rem 1fr auto; }
+  .ed-resultado-list--accion .ed-resultado-gap { display: none; }
+
+  .cic-balance-table tbody td { font-size: 1.1rem; }
+  .cic-chart-panel .chart-body { height: 15rem; }
+}

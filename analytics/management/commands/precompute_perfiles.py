@@ -1,4 +1,3 @@
-import numpy as np
 from django.core.management.base import BaseCommand
 from analytics.models import Etapa
 from analytics.services.perfiles_similares import formatear_perfil, perfil_from_elevation

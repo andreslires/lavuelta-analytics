@@ -46,7 +46,8 @@ cache/
 mapa_ccaa_cache.geojson
 mapa_provincias_cache.geojson
 
-# Notas internas del administrador (no se publican)
+# Notas internas del administrador y de los agentes (no se publican)
 GUIA_ADMIN_INTERNA.md
+AGENTS.md
 
 site_static/

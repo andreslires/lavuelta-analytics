@@ -16,12 +16,16 @@ a otras contrarrelojes porque TODAS las métricas serán similares entre sí y
 muy distintas de una etapa de montaña.
 """
 
+import logging
+
 import numpy as np
 from django.core.cache import cache
 
 from analytics.models import Etapa
 
 from .gpx_processor import GPXProcessor
+
+logger = logging.getLogger(__name__)
 
 # Nº de muestras del perfil normalizado (441 = trama de alta fidelidad).
 N_MUESTRAS = 441
@@ -46,7 +50,11 @@ PESOS = {
 def _gpx_data(etapa):
     """Datos GPX procesados de una etapa (cacheados por archivo)."""
     key = f'gpx_data_{etapa.file_path}'
-    data = cache.get(key)
+    try:
+        data = cache.get(key)
+    except Exception:
+        cache.delete(key)
+        data = None
     if data is None:
         data = GPXProcessor(etapa.file_path).process()
         cache.set(key, data, timeout=None)
@@ -184,6 +192,7 @@ def etapas_similares(referencia, limite=6):
         "id", "edicion_id", "numero", "nombre", "tipo",
         "distancia", "desnivel", "perfil",
         "altitud_max", "pendiente_media", "n_puertos",
+        "localidad_inicio", "localidad_fin",
     ]
     otros = (
         Etapa.objects.exclude(id=referencia.id)
@@ -193,6 +202,45 @@ def etapas_similares(referencia, limite=6):
     pares = [(indice_similitud(referencia, e), e) for e in otros]
     pares.sort(key=lambda p: -p[0])
     return pares[:limite]
+
+
+def similares_resumen(etapa, limite=6):
+    """Etapas parecidas como datos planos (aptos para caché y plantillas estáticas).
+
+    Cada elemento es un dict con año, número, ruta, tipo, km, desnivel y el
+    porcentaje de similitud. El resultado se cachea por etapa; la versión de la
+    clave debe subirse si cambian los datos de las etapas o los pesos.
+    """
+    clave = f'etapas_similares_resumen_v1_{etapa.id}_{limite}'
+    try:
+        datos = cache.get(clave)
+    except Exception:
+        cache.delete(clave)
+        datos = None
+    if datos is not None:
+        return datos
+    try:
+        pares = etapas_similares(etapa, limite=limite)
+    except Exception:
+        # Sección auxiliar: si alguna etapa no tiene perfil ni GPX, no se
+        # rompe la página; simplemente no se muestra (y no se cachea).
+        logger.exception('No se pudieron calcular las etapas similares de %s', etapa)
+        return []
+    datos = [
+        {
+            'year': e.edicion.year,
+            'numero': e.numero,
+            'inicio': e.localidad_inicio,
+            'fin': e.localidad_fin,
+            'tipo': e.tipo,
+            'distancia': e.distancia,
+            'desnivel': e.desnivel,
+            'pct': round(sim * 100),
+        }
+        for sim, e in pares
+    ]
+    cache.set(clave, datos, timeout=None)
+    return datos
 
 
 # ---------------------------------------------------------------------------

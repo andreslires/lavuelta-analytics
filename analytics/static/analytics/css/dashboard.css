@@ -355,3 +355,28 @@
   .dashboard-header { margin-bottom: 2rem; padding-bottom: 2rem; }
   .dashboard-title { margin-bottom: 1rem; }
 }
+
+/* Franja de ciclistas bajo los KPIs */
+.riders-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 2rem;
+  margin-top: 1rem;
+  padding: 0.85rem 1.5rem;
+  border: 1px solid var(--border);
+  background: var(--panel-soft);
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+.riders-strip strong { color: #fff; }
+.riders-strip__cta {
+  margin-left: auto;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+}
+.riders-strip:hover { border-color: var(--accent-gold); }

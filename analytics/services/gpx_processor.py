@@ -5,8 +5,6 @@ import os
 from django.conf import settings
 from geopy.distance import geodesic
 from shapely.geometry import LineString
-from shapely.wkt import loads
-from django.core.cache import cache
 
 
 def clasificar_etapa(distancia, desnivel):
@@ -113,7 +111,9 @@ class GPXProcessor:
           3. Cualquier subcarpeta de DATA_PATH; si hay varios con el mismo nombre
              se prefiere el que está en una carpeta con el mismo nombre (el año).
         """
-        ruta_guardada = os.path.normpath(self.file_path)
+        ruta_guardada = os.path.normpath(
+            str(self.file_path).replace('\\', os.sep)
+        )
         nombre_archivo = os.path.basename(ruta_guardada)
         carpeta_anyo = os.path.basename(os.path.dirname(ruta_guardada))
 
@@ -256,14 +256,5 @@ class GPXProcessor:
             df['elevation'].rolling(window=5, center=True).mean().bfill().ffill()
         )
         df['elevation_diff'] = df['elevation_smooth'].diff().fillna(0)
-        
-        return df
 
-    def spatial_join(self, gdf_ccaa):
-        # Convert GPX to GeoDataFrame
-        gdf_gpx = gpd.GeoDataFrame(
-            geometry=gpd.points_from_xy(self._get_dataframe().longitude, self._get_dataframe().latitude),
-            crs="EPSG:4326"
-        )
-        # Join with regions
-        return gpd.sjoin(gdf_gpx, gdf_ccaa, how="inner", predicate="intersects")
+        return df

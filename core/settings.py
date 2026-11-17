@@ -135,3 +135,18 @@ CACHES = {
     }
 }
 
+
+# Endurecimiento para producción: solo se activa con DEBUG=False, para no
+# afectar al desarrollo local.
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=True)
+    SECURE_HSTS_SECONDS = env.int('SECURE_HSTS_SECONDS', default=0)
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Los tests no deben tocar la caché en disco del sitio real.
+import sys  # noqa: E402
+
+if 'test' in sys.argv:
+    CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}}

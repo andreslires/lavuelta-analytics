@@ -549,7 +549,7 @@ def tramos_comunes(etapa_ref, tramo_min_km=3.0):
 
     linea_ref = _wkt_a_linea(etapa_ref.track_wkt)
     if linea_ref is None:
-        cache.set(cache_key, [])
+        cache.set(cache_key, [], timeout=None)
         return []
 
     # Ancla única para toda la comparación (evita reproyectar el buffer).
@@ -598,7 +598,7 @@ def tramos_comunes(etapa_ref, tramo_min_km=3.0):
         })
 
     datos.sort(key=lambda r: (-r['km'], -r['pct']))
-    cache.set(cache_key, datos)
+    cache.set(cache_key, datos, timeout=None)
     return _hidratar_tramos(datos)
 
 

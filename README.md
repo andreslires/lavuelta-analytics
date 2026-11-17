@@ -9,7 +9,7 @@
 Plataforma analítica y geoespacial para **visualizar, procesar y comparar el histórico de La Vuelta a España (2011–2026)**. Transforma ficheros GPX brutos y clasificaciones en mapas interactivos, métricas avanzadas de terreno y herramientas de análisis comparativo.
 
 > 🌐 **Demo online:** [https://andreslires.github.io/lavuelta-analytics-web/](https://andreslires.github.io/lavuelta-analytics-web/)  
-> *Nota: Esta demo es una exportación a sitio estático alojada en GitHub Pages para explorar el diseño, los mapas y las vistas principales. Al no contar con un backend Python activo, las funciones que requieren cómputo en vivo (el comparador en sus 3 modalidades, los filtros dinámicos del dashboard con URL compartible y el panel de administración) no están disponibles en la versión web estática.*
+> *Nota: Esta demo es una exportación a sitio estático alojada en GitHub Pages. El comparador está precalculado (una página por pareja de ediciones, y listas de etapas parecidas y de recorrido común), pero al no contar con un backend Python activo no están disponibles el filtro dinámico de ediciones del dashboard con URL compartible, la comparación manual de dos etapas lado a lado, los mapas de cada tramo compartido en «Recorrido común» y el panel de administración.*
 
 ---
 
@@ -32,11 +32,13 @@ Para lograrlo, procesé los tracks oficiales en `.gpx` con Python, calculé las 
 
 | Ruta | Módulo | Descripción |
 |---|---|---|
-| `/` | **Dashboard Global** | Métricas acumuladas del histórico (km totales, desnivel, etapas y ediciones). Incluye mapa previo interactivo, métricas geográficas (comunidades y etapas internacionales), filtro dinámico de ediciones con URL compartible (`?years=...`) y tarjetas con *sparklines* altimétricos en SVG. |
-| `/mapa-general/` | **Mapa General** | Visor completo con dos pestañas directas: `?tab=etapas` (todas las rutas históricas clicables con acceso a su perfil) y `?tab=provincias` (provincias atravesadas con detalle de la última etapa que pasó por cada una). |
-| `/edicion/<year>/` | **Detalle de Edición** | KPIs de la temporada (dureza media, etapa más dura/larga/corta), clasificación general final, maillots oficiales, gráficas de desnivel/distancia/tipología y tarjetas individuales por etapa. |
-| `/etapa/<year>/<numero>/` | **Detalle de Etapa** | Mapa interactivo del recorrido (Folium), altimetría dinámica (Plotly), métricas de terreno (altitud máx/mín, pendiente máxima P99, pendiente media de puertos, total de puertos), podio del día y navegación anterior/siguiente. |
-| `/comparar/` *(Backend)* | **Comparador Multimodal** | Tres herramientas avanzadas:<br>• `?tab=ediciones`: Cara a cara entre dos años (KPIs, gráficas superpuestas, tipologías y mapa conjunto).<br>• `?tab=perfiles`: Búsqueda automática de etapas con perfil idéntico o enfrentamiento manual 1v1.<br>• `?tab=zonas`: Detección geoespacial de etapas que compartieron trazado (mínimo ~3 km continuos). |
+| `/` | **Dashboard Global** | Métricas acumuladas del histórico (km totales, desnivel, etapas y ediciones). Incluye mapa previo interactivo, métricas geográficas (comunidades y etapas internacionales), filtro dinámico de ediciones con URL compartible (`?ediciones=2019&ediciones=2023`), franja con el total de ciclistas y el líder de victorias de etapa, y tarjetas con *sparklines* altimétricos en SVG. |
+| `/mapa-general/` | **Mapa General** | Visor completo con dos pestañas directas: `/mapa-general/etapas/` (todas las rutas históricas clicables con acceso a su perfil) y `/mapa-general/provincias/` (provincias atravesadas con detalle de la última etapa que pasó por cada una). |
+| `/edicion/<year>/` | **Detalle de Edición** | KPIs de la temporada (dureza media, etapa más dura/larga/corta), clasificación general final, maillots oficiales, gráficas de desnivel/distancia/tipología y tarjetas individuales por etapa (con distintivo en las contrarrelojes por equipos, CRE). |
+| `/etapa/<year>/<numero>/` | **Detalle de Etapa** | Mapa interactivo del recorrido (Folium), altimetría dinámica (Plotly), métricas de terreno (altitud máx/mín, pendiente máxima P99, pendiente media de puertos, total de puertos), podio del día (por equipos en las CRE), las etapas más parecidas de toda la historia y navegación anterior/siguiente. |
+| `/ciclistas/` | **Ciclistas** | Directorio-ranking de todos los corredores del histórico, con buscador, selector *Etapas / General* (cambia los números mostrados y el criterio de orden) y acceso a cada ficha. |
+| `/ciclista/<id>/` | **Ficha de ciclista** | Balance en La Vuelta (victorias, podios y top-10 de etapa, resultados en la general), podios en etapas, equipos y trayectoria por año. Las contrarrelojes por equipos no suman a los corredores. |
+| `/comparar/` | **Comparador Multimodal** | Tres herramientas avanzadas (en la demo estática están precalculadas):<br>• Ediciones (`?tab=ediciones`): Cara a cara entre dos años (KPIs, gráficas superpuestas, tipologías y mapa conjunto).<br>• Etapas similares (`?tab=perfiles`): Búsqueda automática de etapas con perfil parecido; el enfrentamiento manual 1v1 requiere la versión con servidor.<br>• Recorrido común (`?tab=zonas`): Detección geoespacial de etapas que compartieron trazado (mínimo ~3 km continuos); los mapas por pareja requieren la versión con servidor. |
 | `/ayuda/` | **Guía de uso** | Documentación integrada en la aplicación con el funcionamiento de cada vista y glosario. |
 | `/admin/` | **Administración** | Panel de control Django para mantenimiento y verificación de datos. |
 
@@ -48,7 +50,7 @@ Para lograrlo, procesé los tracks oficiales en `.gpx` con Python, calculé las 
 * **Interactividad frontend:** [HTMX](https://htmx.org/) para actualización dinámica de gráficas y mapas en servidor sin recargar la página.
 * **Análisis geoespacial y GPX:** [GeoPandas](https://geopandas.org/), [Shapely](https://shapely.readthedocs.io/), [gpxpy](https://github.com/tkrajina/gpxpy) y [geopy](https://geopy.readthedocs.io/) para buffers de ruta, solapes de tramos e importación de tracks.
 * **Ciencia de datos:** [pandas](https://pandas.pydata.org/) y [NumPy](https://numpy.org/) para cálculo de desniveles, normalización de altimetrías y limpieza de pendientes por percentiles.
-* **Visualización:** [Plotly Python](https://plotly.com/python/) (gráficas interactivas incrustadas) y [Folium](https://python-visualization.github.io/folium/) con mapa base oscuro (*CartoDB Dark Matter*).
+* **Visualización:** [Plotly Python](https://plotly.com/python/) (gráficas interactivas incrustadas) y [Folium](https://python-visualization.github.io/folium/) con mapa base oscuro (*Esri Dark Gray*, con datos de OpenStreetMap).
 * **Calidad y configuración:** [django-environ](https://django-environ.readthedocs.io/) y [Ruff](https://docs.astral.sh/ruff/) para linting y formateo.
 
 ---
@@ -89,6 +91,12 @@ python manage.py runserver 127.0.0.1:8123 --noreload
 
 La aplicación estará lista en [http://127.0.0.1:8123/](http://127.0.0.1:8123/).
 
+### Datos y web estática
+
+Los resultados de etapa, las clasificaciones generales y las contrarrelojes por equipos se cargan con comandos de `manage.py` (`importar_csv`, `importar_general_csv`, `importar_general_pcs`, `migrar_cre` e `importar_cre_pcs`) a partir de archivos locales de `data/`, que no forman parte del repositorio. Las CRE puntúan al equipo y no suman victorias ni podios individuales. La versión estática se genera con `python manage.py export_static` (consulta `--help` para exportar solo una parte de la web, simular con `--dry-run` o verificar los enlaces con `--verificar`).
+
+Para desarrollo: `pip install -r requirements-dev.txt` (linter) y `python manage.py test` (tests). En producción, con `DEBUG=False`, se activan cookies seguras y redirección a HTTPS (configurable con `SECURE_SSL_REDIRECT` y `SECURE_HSTS_SECONDS`).
+
 ---
 
 ## 🏗️ Arquitectura del proyecto
@@ -99,10 +107,12 @@ El código mantiene una estricta separación de responsabilidades, aislando los 
 proyecto-lavuelta/
 ├── core/                         # Configuración Django (settings, urls, WSGI/ASGI, context processors)
 ├── analytics/                    # Aplicación analítica
-│   ├── models.py                 # Modelos: Edicion, Etapa
+│   ├── models.py                 # Modelos: Edicion, Etapa, Ciclista, Equipo, resultados (individual y por equipos) y general
 │   ├── views.py                  # Controladores de vistas y respuestas HTMX
+│   ├── tests.py                  # Tests (páginas, ranking, CRE, exportación estática)
 │   ├── services/                 # Lógica de negocio desacoplada de las vistas
 │   │   ├── charts.py             # Renderizado de figuras Plotly (perfiles y comparativas)
+│   │   ├── ciclistas.py          # Ranking y ficha histórica de ciclistas
 │   │   ├── geografia.py          # Renderizado de mapas Folium y cálculo de tramos/zonas
 │   │   ├── gpx_processor.py      # Parseo GPX, cálculo de pendientes (P99) y detección de puertos
 │   │   ├── perfiles_similares.py # Algoritmo de correlación altimétrica entre etapas
